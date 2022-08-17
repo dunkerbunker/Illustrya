@@ -206,7 +206,6 @@ const Navbar = () => {
         )}
         {/* Mobile navigation bar end  */}
 
-
         {/* Open the mobile navbar based on the isOpen state which is changed by clicking above icons */}
         {/* Components follow same system as on large screens */}
         {isOpen && (
