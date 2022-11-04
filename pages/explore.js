@@ -3,7 +3,7 @@ import { useState, useEffect, useContext } from 'react';
 import { NFTContext } from '../context/NFTContext';
 import { NFTCard, Loader } from '../components';
 
-const ListedNFTs = () => {
+const Explore = () => {
   const { fetchMyNFTsOrListedNFTs } = useContext(NFTContext);
   const [nfts, setNfts] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -56,4 +56,4 @@ const ListedNFTs = () => {
   );
 };
 
-export default ListedNFTs;
+export default Explore;
