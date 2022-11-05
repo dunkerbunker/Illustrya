@@ -3,7 +3,7 @@ import Image from 'next/image';
 import { useTheme } from 'next-themes';
 
 import { NFTContext } from '../context/NFTContext';
-import { Banner, CreatorCard, Loader, NFTCard, SearchBar } from '../components';
+import { ArtworkCard, Banner, CreatorCard, Loader, NFTCard, SearchBar } from '../components';
 import images from '../assets';
 // function that makes a random id
 import { makeId } from '../utils/makeId';
@@ -114,7 +114,7 @@ const Home = () => {
 
   const topCreators = getCreators(nftsCopy);
   // console.log('top Creators', topCreators);
-  // console.log('nfts', nfts);
+  console.log('nfts', nfts);
 
   return (
     <div>
@@ -220,6 +220,12 @@ const Home = () => {
                 <div className="mt-3 w-full flex flex-wrap justify-start md:justify-center">
                   {nfts?.map((nft) => (
                     <NFTCard
+                      key={nft.tokenId}
+                      nft={nft}
+                    />
+                  ))}
+                  {nfts?.map((nft) => (
+                    <ArtworkCard
                       key={nft.tokenId}
                       nft={nft}
                     />
