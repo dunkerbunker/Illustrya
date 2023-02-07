@@ -122,7 +122,7 @@ const Navbar = () => {
             onClick={() => {}}
           >
             <Image
-              src={images.logo02}
+              src={images.discord}
               objectFit="contain"
               width={32}
               height={32}
