@@ -95,9 +95,12 @@ export const NFTProvider = ({ children }) => {
     const provider = new ethers.providers.Web3Provider(connection);
     // who is making this NFT or sale
     const signer = provider.getSigner();
+    console.log(1);
     // need to convert from number to Wei or Gwei
     const price = ethers.utils.parseUnits(formInputPrice, 'ether');
+    console.log(2);
     const contract = fetchContract(signer);
+    console.log(3);
     const listingPrice = await contract.getListingPrice();
 
     // check if user is listing or resslling and perform transaction
@@ -105,7 +108,7 @@ export const NFTProvider = ({ children }) => {
     const transaction = !isReselling
       ? await contract.createToken(url, price, { value: listingPrice.toString() })
       : await contract.resellToken(id, price, { value: listingPrice.toString() });
-
+    console.log(4);
     setIsLoadingNFT(true);
     await transaction.wait();
   };
@@ -123,12 +126,9 @@ export const NFTProvider = ({ children }) => {
     try {
       // uploading to IPFS
       const added = await client.add(data);
-      // console.log(1);
       // get link
       const url = `${dedicatedEndPoint}/ipfs/${added.path}`;
-      // console.log(2);
       await createSale(url, price);
-      // console.log(3);
       // go to home page
       router.push('/');
     } catch (error) {
