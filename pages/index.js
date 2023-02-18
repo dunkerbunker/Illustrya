@@ -3,7 +3,7 @@ import Image from 'next/image';
 import { useTheme } from 'next-themes';
 
 import { NFTContext } from '../context/NFTContext';
-import { ArtworkCard, Banner, CreatorCard, Loader, NFTCard, SearchBar } from '../components';
+import { ArtworkCard, Banner, CreatorCard, Loader, SearchBar } from '../components';
 import images from '../assets';
 // function that makes a random id
 import { makeId } from '../utils/makeId';
@@ -218,12 +218,12 @@ const Home = () => {
                 </div>
                 {/* creating a flex wrapper and mapping the trending NFT art in it */}
                 <div className="mt-3 w-full flex flex-wrap justify-start md:justify-center">
-                  {nfts?.map((nft) => (
+                  {/* {nfts?.map((nft) => (
                     <NFTCard
                       key={nft.tokenId}
                       nft={nft}
                     />
-                  ))}
+                  ))} */}
                   {nfts?.map((nft) => (
                     <ArtworkCard
                       key={nft.tokenId}
@@ -231,7 +231,7 @@ const Home = () => {
                     />
                   ))}
                   {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((i) => (
-                    <NFTCard
+                    <ArtworkCard
                       key={`nft-${i}`}
                       nft={{
                         i,
