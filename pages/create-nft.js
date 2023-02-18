@@ -54,47 +54,60 @@ const CreateNFT = () => {
           Upload your artwork as NFT!
         </h1>
         <div className="mt-16">
-          <p className="font-poppins dark:text-white text-nft-black-1 font-semibold text-xl">
-            Upload File
-          </p>
+          {fileUrl ? (
+            <p className="font-poppins dark:text-white text-nft-black-1 font-semibold text-xl">
+              File uploaded!
+            </p>
+          ) : (
+            <p className="font-poppins dark:text-white text-nft-black-1 font-semibold text-xl">
+              Upload file
+            </p>
+          )}
           <div className="mt-4">
             {/* spreading props provided by getRootProps from the useDropzone hook */}
-            <div {...getRootProps()} className={fileStyle}>
-              <input {...getInputProps()} />
-              <div className="flexCenter flex-col text-center">
-                <p className="font-poppins dark:text-white text-nft-black-1 font-semibold text-lg">
-                  PNG, GIF, SVG, WEBM. Max 10MB.
-                </p>
-
-                <div className="my-12 w-full flex justify-center">
-                  <Image
-                    src={images.upload}
-                    width={100}
-                    height={100}
-                    objectFit="contain"
-                    alt="file-upload"
-                    className={theme === 'light' ? 'filter invert' : ''}
-                  />
+            {fileUrl ? (
+              <div className={fileStyle}>
+                <div className="flexCenter flex-col text-center">
+                  <div className="my-12 w-full flex justify-center">
+                    <Image
+                      src={fileUrl}
+                      width={800}
+                      height={800}
+                      objectFit="contain"
+                      alt="file-upload"
+                      className=""
+                    />
+                  </div>
                 </div>
-
-                <p className="font-poppins dark:text-white text-nft-black-1 font-semibold text-sm">
-                  Drag and Drop File
-                </p>
-                <p className="font-poppins dark:text-white text-nft-black-1 font-semibold text-sm mt-2">
-                  or Browser media on your device
-                </p>
-
               </div>
-            </div>
-            {fileUrl && (
-              <aside>
-                <div>
-                  <img
-                    src={fileUrl}
-                    alt="file-preview"
-                  />
+            ) : (
+              <div {...getRootProps()} className={fileStyle}>
+                <input {...getInputProps()} />
+                <div className="flexCenter flex-col text-center">
+                  <p className="font-poppins dark:text-white text-nft-black-1 font-semibold text-lg">
+                    PNG, GIF, SVG, WEBM. Max 10MB.
+                  </p>
+
+                  <div className="my-12 w-full flex justify-center">
+                    <Image
+                      src={images.upload}
+                      width={100}
+                      height={100}
+                      objectFit="contain"
+                      alt="file-upload"
+                      className={theme === 'light' ? 'filter invert' : ''}
+                    />
+                  </div>
+
+                  <p className="font-poppins dark:text-white text-nft-black-1 font-semibold text-sm">
+                    Drag and Drop File
+                  </p>
+                  <p className="font-poppins dark:text-white text-nft-black-1 font-semibold text-sm mt-2">
+                    or Browser media on your device
+                  </p>
+
                 </div>
-              </aside>
+              </div>
             )}
           </div>
         </div>
