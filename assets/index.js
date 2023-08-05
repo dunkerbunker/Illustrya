@@ -1,5 +1,6 @@
 import heartOutline from './heart-outline.png';
 import heart from './heart.png';
+import logo from './logo.png';
 import search from './Search.png';
 import tick from './tick.png';
 import cross from './cross.png';
@@ -40,6 +41,7 @@ import arrow from './arrow.png';
 export default {
   heartOutline,
   heart,
+  logo,
   search,
   tick,
   cross,

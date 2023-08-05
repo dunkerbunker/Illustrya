@@ -20,7 +20,7 @@ const CreateNFT = () => {
   const onDrop = useCallback(async (acceptedFile) => {
     // upload image to blockchain aka IPFS
     const url = await uploadToIPFS(acceptedFile[0]);
-    console.log(url);
+
     setFileUrl(url);
   }, []);
 
@@ -69,7 +69,7 @@ const CreateNFT = () => {
               <div className={fileStyle}>
                 <div className="flexCenter flex-col text-center">
                   <div className="my-12 w-full flex justify-center">
-                    <Image
+                    <img
                       src={fileUrl}
                       width={800}
                       height={800}

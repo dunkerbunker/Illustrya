@@ -32,7 +32,7 @@ const Footer = () => {
               alt="logo"
             />
             <p className="dark:text-white text-nft-black-1 font-semibold text-lg ml-1">
-              Art Marketplace
+              Illustrya
             </p>
           </div>
           <p className="font-poppins dark:text-white text-nft-black-1 font-semibold text-base mt-6">
@@ -53,7 +53,7 @@ const Footer = () => {
 
         <div className="flex-1 flexBetweenStart flex-wrap ml-10 md:ml-0 md:mt-8">
           {/* use of footerLinks component made in the same file */}
-          <FooterLinks heading="Art Marketplace" items={['Explore', 'How it Works', 'Contact Us']} />
+          <FooterLinks heading="Illustrya" items={['Explore', 'How it Works', 'Contact Us']} />
           <FooterLinks heading="Support" items={['Help center', 'Terms of service', 'Legal', 'Privacy policy']} />
         </div>
       </div>

@@ -3,7 +3,7 @@ import Image from 'next/image';
 import { useTheme } from 'next-themes';
 
 import { NFTContext } from '../context/NFTContext';
-import { ArtworkCard, Banner, CreatorCard, Loader, SearchBar } from '../components';
+import { Banner, CreatorCard, Loader, NFTCard, SearchBar } from '../components';
 import images from '../assets';
 // function that makes a random id
 import { makeId } from '../utils/makeId';
@@ -114,7 +114,7 @@ const Home = () => {
 
   const topCreators = getCreators(nftsCopy);
   // console.log('top Creators', topCreators);
-  console.log('nfts', nfts);
+  // console.log('nfts', nfts);
 
   return (
     <div>
@@ -126,11 +126,11 @@ const Home = () => {
             name={<>Discover, collect and sell <br /> extraordinary NFTs </>}
           />
           {/* !isLoading && !nfts.length */}
-          {/* {!isLoading && !nfts.length ? (
+          {!isLoading && !nfts.length ? (
             <h1 className="font-poppins dark:text-white text-nft-black-1 text-2xl minlf:text-4xl font-semibold ml-4 xs:ml-0">
               That&apos;s weird... No NFTs found. Please try again later.
             </h1>
-          ) : */} { isLoading ? <Loader /> : (
+          ) : isLoading ? <Loader /> : (
             <>
               <div>
                 <h1 className="font-poppins dark:text-white text-nft-black-1 text-2xl minlg:text-4xl font-semibold ml-4 xs:ml-0">
@@ -156,7 +156,7 @@ const Home = () => {
                       />
                     ))}
                     {/* map through the top creators */}
-                    {/* {[6, 7, 8, 9, 10].map((i) => (
+                    {[6, 7, 8, 9, 10].map((i) => (
                       // custom component  from import
                       <CreatorCard
                         key={`creator-${i}`}
@@ -165,7 +165,7 @@ const Home = () => {
                         creatorName={`0x${makeId(3)}...${makeId(4)}`}
                         creatorEths={10 - i * 0.5}
                       />
-                    ))} */}
+                    ))}
                     {/* when hideButton state is true show buttons */}
                     {!hideButtons && (
                     <>
@@ -218,20 +218,14 @@ const Home = () => {
                 </div>
                 {/* creating a flex wrapper and mapping the trending NFT art in it */}
                 <div className="mt-3 w-full flex flex-wrap justify-start md:justify-center">
-                  {/* {nfts?.map((nft) => (
-                    <NFTCard
-                      key={nft.tokenId}
-                      nft={nft}
-                    />
-                  ))} */}
                   {nfts?.map((nft) => (
-                    <ArtworkCard
+                    <NFTCard
                       key={nft.tokenId}
                       nft={nft}
                     />
                   ))}
                   {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((i) => (
-                    <ArtworkCard
+                    <NFTCard
                       key={`nft-${i}`}
                       nft={{
                         i,
@@ -246,7 +240,7 @@ const Home = () => {
                 </div>
               </div>
             </>
-    )}
+          )}
 
         </div>
       </div>

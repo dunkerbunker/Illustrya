@@ -16,8 +16,8 @@ const MenuItems = ({ isMobile, active, setActive }) => {
   const generateLink = (i) => {
     switch (i) {
       case 0: return '/';
-      case 1: return '/explore';
-      case 2: return 'my-nfts';
+      case 1: return '/listed-nfts';
+      case 2: return '/my-nfts';
       default:
         break;
     }
@@ -25,7 +25,7 @@ const MenuItems = ({ isMobile, active, setActive }) => {
   // returns the menu items with correct classes and links in a combined component
   return (
     <ul className={`list-none flexCenter flex-row ${isMobile && 'flex-col h-full'}`}>
-      {['For you', 'Explore', 'Profile'].map((item, i) => (
+      {['Explore NFTs', 'Listed NFTs', 'My NFTs'].map((item, i) => (
         <li
           key={i}
           onClick={() => {
@@ -71,13 +71,13 @@ const ButtonGroup = ({ setActive, router }) => {
 const checkActive = (active, setActive, router) => {
   switch (router.pathname) {
     case '/':
-      if (active !== 'For you') setActive('For you');
+      if (active !== 'Explore NFTs') setActive('Explore NFTs');
       break;
-    case '/explore':
-      if (active !== 'Explore') setActive('Explore');
+    case '/listed-nfts':
+      if (active !== 'Listed NFTs') setActive('Listed NFTs');
       break;
     case '/my-nfts':
-      if (active !== 'profile') setActive('profile');
+      if (active !== 'My NFTs') setActive('My NFTs');
       break;
     case '/create-nft':
       setActive('');
@@ -92,7 +92,7 @@ const Navbar = () => {
   // all hooks being used
   const { theme, setTheme } = useTheme();
   const router = useRouter();
-  const [active, setActive] = useState('For you');
+  const [active, setActive] = useState('Explore NFTs');
   const [isOpen, setIsOpen] = useState(false);
 
   // use effect for when app starts
@@ -122,7 +122,7 @@ const Navbar = () => {
             onClick={() => {}}
           >
             <Image
-              src={images.discord}
+              src={images.logo02}
               objectFit="contain"
               width={32}
               height={32}
