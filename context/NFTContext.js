@@ -168,6 +168,32 @@ export const NFTProvider = ({ children }) => {
     return items;
   };
 
+  const fetchSoldNFTs = async () => {
+    setIsLoadingNFT(false);
+
+    const provider = new ethers.providers.JsonRpcProvider();
+    const contract = fetchContract(provider);
+    const data = await contract.fetchSoldItems(); // Changed this line
+    const items = await Promise.all(data.map(async ({ tokenId, seller, owner, price: unformattedPrice }) => {
+      const tokenURI = await contract.tokenURI(tokenId);
+      const { data: { image, name, description } } = await axios.get(tokenURI);
+      const price = ethers.utils.formatUnits(unformattedPrice.toString(), 'ether');
+
+      return {
+        price,
+        tokenid: tokenId.toNumber(),
+        seller,
+        owner,
+        image,
+        name,
+        description,
+        tokenURI,
+      };
+    }));
+
+    return items;
+  };
+
   const fetchMyNFTsOrListedNFTs = async (type) => {
     setIsLoadingNFT(false);
 
@@ -240,6 +266,7 @@ export const NFTProvider = ({ children }) => {
         fetchMyNFTsOrListedNFTs,
         buyNFT,
         createSale,
+        fetchSoldNFTs,
         isLoadingNFT }}
     >
       {children}

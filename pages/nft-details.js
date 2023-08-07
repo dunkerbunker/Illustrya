@@ -21,28 +21,27 @@ const PaymentBodyCmp = ({ nft, nftCurrency }) => (
     <div className="flexBetweenStart my-5">
       <div className="flex-1 flexStartCenter">
         <div className="relative w-28 h-28">
-          <Image
+          <img
             src={nft.image}
             layout="fill"
             objectFit="cover"
+            className="rounded-lg h-full w-full"
           />
-        </div>
-        <div className="flexCenterStart flex-col ml-5">
-          <p className="font-poppins dark:text-white text-nft-black-1 font-semibold text-sm minlg:text-xl">
-            {shortenAddress(nft.seller)}
-          </p>
-          <p className="font-poppins dark:text-white text-nft-black-1 text-sm minlg:text-xl font-normal">
-            {nft.name}
-          </p>
         </div>
       </div>
 
-      <div>
+      <div className="text-right">
         <p className="font-poppins dark:text-white text-nft-black-1 text-sm minlg:text-xl font-normal">
           {`${nft.price} `}
           <span className="font-semibold">
             {nftCurrency}
           </span>
+        </p>
+        <p className="mt-3 font-poppins dark:text-white text-nft-black-1 font-semibold text-sm minlg:text-xl">
+          Buy from: {shortenAddress(nft.seller)}
+        </p>
+        <p className="mt-2 font-poppins dark:text-white text-nft-black-1 text-sm minlg:text-xl font-normal">
+          {nft.name}
         </p>
       </div>
     </div>
@@ -95,10 +94,10 @@ const NFTDetails = () => {
     <div className="relative flex justify-center md:flex-col min-h-screen">
       <div className="relative flex-1 flexCenter sm:px-4 p-12 border-r md:border-r-0 md:border-b dark:border-nft-black-1 border-nft-gray-1">
         <div className="relative w-557 minmd:w-2/3 minmd:h-2/3 sm:w-full sm:h-300 h-557">
-          <Image
+          <img
             src={nft.image}
             objectFit="cover"
-            className="rounded-xl shadow-lg"
+            className="rounded-xl shadow-lg object-cover"
             layout="fill"
           />
         </div>
@@ -205,10 +204,11 @@ const NFTDetails = () => {
               onClick={() => setSuccessModal(false)}
             >
               <div className="relative w-52 h-52">
-                <Image
+                <img
                   src={nft.image}
                   objectFit="cover"
                   layout="fill"
+                  className="rounded-xl object-cover w-full h-full"
                 />
               </div>
               <p className="font-poppins dark:text-white text-nft-black-1 text-sm minlg:text-xl font-normal mt-10">
