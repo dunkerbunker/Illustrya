@@ -47,6 +47,12 @@ contract NFTMarketplace is ERC721URIStorage {
         address buyer;
     }
 
+    // Create a mapping from token ID to an array of previous owners
+    mapping(uint256 => address[]) private previousOwners;
+
+    // Create a mapping from token ID to an array of sale prices
+    mapping(uint256 => uint256[]) private salesHistory;
+
     // have an event for when a market item is created.
     // this event matches the MarketItem
     // format is func declare format in java with params
@@ -128,6 +134,9 @@ contract NFTMarketplace is ERC721URIStorage {
             address(0)
         );
 
+        previousOwners[tokenId].push(msg.sender);
+        salesHistory[tokenId].push(idToMarketItem[tokenId].price);
+
         // now to transfer the ownership of the nft to the contract -> next buyer
         // method available on ERC721
         // _transfer(from, to, tokenID)
@@ -176,13 +185,16 @@ contract NFTMarketplace is ERC721URIStorage {
         idToMarketItem[tokenId].sold = true;
         // seller changes from nft market place to no seller
         idToMarketItem[tokenId].seller = payable(address(0));
-        idToMarketItem[tokenId].buyer = msg.sender;  // Record the buyer
+        idToMarketItem[tokenId].buyer = msg.sender; // Record the buyer
         _itemsSold.increment();
 
         // transfer the NFT ownership from the seller to the buyer
         _transfer(address(this), msg.sender, tokenId);
         payable(owner).transfer(listingPrice); // change listing price to something else when deply so website can get fee on each sale
         payable(creator).transfer(msg.value);
+
+        previousOwners[tokenId].push(idToMarketItem[tokenId].owner);
+        salesHistory[tokenId].push(idToMarketItem[tokenId].price);
     }
 
     // Returns all unsold market items
@@ -272,6 +284,24 @@ contract NFTMarketplace is ERC721URIStorage {
         return items;
     }
 
+    // Returns all market items, both sold and listed
+    function fetchAllMarketItems() public view returns (MarketItem[] memory) {
+        uint totalItemCount = _tokenIds.current();
+        uint currentIndex = 0;
+
+        // Array size is total number of items
+        MarketItem[] memory items = new MarketItem[](totalItemCount);
+
+        for (uint i = 0; i < totalItemCount; i++) {
+            uint currentId = i + 1;
+            MarketItem storage currentItem = idToMarketItem[currentId];
+            items[currentIndex] = currentItem;
+            currentIndex += 1;
+        }
+
+        return items;
+    }
+
     // Returns all sold market items
     function fetchSoldItems() public view returns (MarketItem[] memory) {
         uint totalItemCount = _tokenIds.current();
@@ -291,4 +321,10 @@ contract NFTMarketplace is ERC721URIStorage {
         return items;
     }
 
+    // Create a function to get the previous owners and sales history of a token
+    function getTokenHistory(
+        uint256 tokenId
+    ) public view returns (address[] memory, uint256[] memory) {
+        return (previousOwners[tokenId], salesHistory[tokenId]);
+    }
 }

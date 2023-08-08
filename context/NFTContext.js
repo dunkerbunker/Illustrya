@@ -173,17 +173,25 @@ export const NFTProvider = ({ children }) => {
 
     const provider = new ethers.providers.JsonRpcProvider();
     const contract = fetchContract(provider);
-    const data = await contract.fetchSoldItems(); // Changed this line
-    const items = await Promise.all(data.map(async ({ tokenId, seller, owner, price: unformattedPrice }) => {
+    const data = await contract.fetchAllMarketItems();
+    const items = await Promise.all(data.map(async ({ tokenId, seller, owner, buyer, price: unformattedPrice }) => {
       const tokenURI = await contract.tokenURI(tokenId);
       const { data: { image, name, description } } = await axios.get(tokenURI);
       const price = ethers.utils.formatUnits(unformattedPrice.toString(), 'ether');
+
+      // Fetch token history
+      const [previousOwners, salesHistory] = await contract.getTokenHistory(tokenId);
+      // Convert sale prices from wei to ether
+      const previousSalePrices = salesHistory.map((pricex) => ethers.utils.formatUnits(pricex.toString(), 'ether'));
 
       return {
         price,
         tokenid: tokenId.toNumber(),
         seller,
         owner,
+        buyer,
+        previousOwners, // Added previousOwners field
+        previousSalePrices, // Added previousSalePrices field
         image,
         name,
         description,

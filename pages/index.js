@@ -7,7 +7,7 @@ import { Banner, CreatorCard, Loader, NFTCard, SearchBar } from '../components';
 import images from '../assets';
 // function that makes a random id
 import { makeId } from '../utils/makeId';
-import { getCreators } from '../utils/getTopCreators';
+import { getCreators, getBuyers, getSellersWithMostSales } from '../utils/getTopCreators';
 import { shortenAddress } from '../utils/shortenAddress';
 
 const Home = () => {
@@ -21,8 +21,11 @@ const Home = () => {
   const [activeSelect, setActiveSelect] = useState('Recently added');
 
   // ref to identify scroll element and its parent
-  const parentRef = useRef(null);
-  const scrollRef = useRef(null);
+  const parentRefBuyers = useRef(null);
+  const scrollRefBuyers = useRef(null);
+  const parentRefCreators = useRef(null);
+  const scrollRefCreators = useRef(null);
+
   // theme hook to get the current theme
   const { theme } = useTheme();
   // context to get the data from the context
@@ -36,12 +39,14 @@ const Home = () => {
         setNftsCopy(items);
         setIsLoading(false);
       });
+    console.log(nfts);
 
     // fetch the sold nfts from the context
     fetchSoldNFTs()
       .then((items) => {
         setSoldNfts(items);
       });
+    console.log(soldNfts);
   }, []);
 
   useEffect(() => {
@@ -83,8 +88,8 @@ const Home = () => {
   };
 
   // function to check which direction to scroll when clicked
-  const handleScroll = (direction) => {
-    const { current } = scrollRef;
+  const handleScroll = (direction, scrollReference) => {
+    const { current } = scrollReference;
 
     const scrollAmount = window.innerWidth > 1800 ? 270 : 210;
 
@@ -95,34 +100,40 @@ const Home = () => {
     }
   };
 
-  // check if the scrollable with of the section is greater than the width of its parent.
-  // this would mean there is extra space and the scroll buttons should not be shown
-  const isScrollable = () => {
-    const { current } = scrollRef;
-    const { current: parent } = parentRef;
+  // check if the scrollable width of the section is greater than the width of its parent.
+  const isScrollable = (scrollElementRef, parentElementRef, setFunction) => {
+    const { current: scrollElement } = scrollElementRef;
+    const { current: parentElement } = parentElementRef;
 
-    if (current?.scrollWidth > parent?.offsetWidth) {
-      setHideButtons(false);
+    if (scrollElement?.scrollWidth > parentElement?.offsetWidth) {
+      setFunction(false);
     } else {
-      setHideButtons(true);
+      setFunction(true);
     }
   };
 
-  // useEffect to check run isScrollable function when the page loads
-  // to call it again everytime the window is resized and remove the event listener after calling function
   useEffect(() => {
-    isScrollable();
-    window.addEventListener('resize', isScrollable);
+    // Check scrollability for both Top Creators and Top Buyers
+    isScrollable(scrollRefCreators, parentRefCreators, setHideButtons);
+    isScrollable(scrollRefBuyers, parentRefBuyers, setHideButtons);
+
+    const handleResize = () => {
+      isScrollable(scrollRefCreators, parentRefCreators, setHideButtons);
+      isScrollable(scrollRefBuyers, parentRefBuyers, setHideButtons);
+    };
+
+    window.addEventListener('resize', handleResize);
 
     return () => {
-      window.removeEventListener('resize', isScrollable);
+      window.removeEventListener('resize', handleResize);
     };
-  });
+  }, []);
 
-  const topCreators = getCreators(soldNfts);
-  const mostSoldCreators = getCreators(soldNfts);
-  // console.log('top Creators', topCreators);
-  // console.log('nfts', nfts);
+  const topCreators = getSellersWithMostSales(soldNfts);
+  // console.log('top creators', topCreators);
+  console.log('nfts', soldNfts);
+  const topBuyers = getBuyers(soldNfts);
+  // console.log('top buyers', topBuyers);
 
   return (
     <div>
@@ -131,77 +142,124 @@ const Home = () => {
           <Banner
             parentStyles="justify-start mb-6 h-72 sm:h-60 p-12 xs:p-2 xs:h-44 rounded-3xl"
             childStyles="md:text-4xl sm:text-2xl xs:text-xl text-left"
-            name={<>Discover, collect and sell <br /> extraordinary NFTs </>}
+            name={<>Discover, collect and sell <br /> extraordinary Art </>}
           />
-          <div>
-            <h1 className="font-poppins dark:text-white text-nft-black-1 text-2xl minlg:text-4xl font-semibold ml-4 xs:ml-0">
-              Top Creators
-            </h1>
-            <div
-              className="relative flex-1 max-w-full flex mt-3"
-                  // use of reference from above
-              ref={parentRef}
-            >
+
+          <div className="flex flex-row md:flex-col w-full space-x-4 md:space-x-0 space-b justify-between">
+            {/* BRRRRRRRRR */}
+            <div className="w-1/2 md:w-full overflow-x-auto border-2 rounded-3xl border-purple-500 p-4 mt-4 mb-4 mr-4">
+              <h1 className="font-poppins dark:text-white text-nft-black-1 text-2xl minlg:text-4xl font-semibold ml-4 xs:ml-0">
+                Top Creators
+              </h1>
               <div
-                className="flex flex-row w-max overflow-x-scroll no-scrollbar select-none"
-                ref={scrollRef}
+                className="relative flex-1 max-w-full overflow-x-auto flex mt-3"
+                ref={parentRefCreators}
               >
-                {topCreators && topCreators.map((creator, i) => (
-                  // custom component  from import
-                  <CreatorCard
-                    key={`creator-${i}`}
-                    rank={i + 1}
-                    creatorImage={images[`creator${i + 1}`]}
-                    creatorName={shortenAddress(creator.seller)}
-                    creatorEths={creator.sum}
-                  />
-                ))}
-                {/* map through the top creators */}
-                {[1, 2, 3, 4, 5].map((i) => (
-                  // custom component  from import
-                  <CreatorCard
-                    key={`creator-${i}`}
-                    rank={i}
-                    creatorImage={images[`creator${i}`]}
-                    creatorName={`0x${makeId(3)}...${makeId(4)}`}
-                    creatorEths={10 - i * 0.5}
-                  />
-                ))}
-                {/* when hideButton state is true show buttons */}
-                {!hideButtons && (
-                <>
-                  <div
-                      // call above function to scroll left
-                    onClick={() => handleScroll('left')}
-                    className="absolute w-8 h-8 minlg:w-12 minlg:h-12 top-45 cursor-pointer left-0"
-                  >
-                    <Image
-                      src={images.left}
-                      layout="fill"
-                      objectFit="contain"
-                      alt="left_arrow"
-                      className={theme === 'light' ? 'filter invert' : ''}
+                <div
+                  className="flex flex-row w-max overflow-x-scroll no-scrollbar select-none"
+                  ref={scrollRefCreators}
+                >
+                  {topCreators && topCreators.slice(0, 6).map((creator, i) => (
+                    <CreatorCard
+                      key={`creator-${i}`}
+                      rank={i + 1}
+                      creatorImage={images[`creator${i + 1}`]}
+                      creatorName={shortenAddress(creator.sellerAddress)}
+                      creatorEths={creator.salesValue}
                     />
-                  </div>
-                  <div
-                      // call above fucntion to scroll right
-                    onClick={() => handleScroll('right')}
-                    className="absolute w-8 h-8 minlg:w-12 minlg:h-12 top-45 cursor-pointer right-0"
-                  >
-                    <Image
-                      src={images.right}
-                      layout="fill"
-                      objectFit="contain"
-                      alt="right_arrow"
-                      className={theme === 'light' ? 'filter invert' : ''}
-                    />
-                  </div>
-                </>
-                )}
-                {/* end of scroll button section */}
+                  ))}
+
+                  {!hideButtons && (
+                  <>
+                    <div
+                      onClick={() => handleScroll('left', scrollRefCreators)}
+                      className="absolute w-8 h-8 minlg:w-12 minlg:h-12 top-45 cursor-pointer left-0"
+                    >
+                      <Image
+                        src={images.left}
+                        layout="fill"
+                        objectFit="contain"
+                        alt="left_arrow"
+                        className={theme === 'light' ? 'filter invert' : ''}
+                      />
+                    </div>
+                    <div
+                      onClick={() => handleScroll('right', scrollRefCreators)}
+                      className="absolute w-8 h-8 minlg:w-12 minlg:h-12 top-45 cursor-pointer right-0"
+                    >
+                      <Image
+                        src={images.right}
+                        layout="fill"
+                        objectFit="contain"
+                        alt="right_arrow"
+                        className={theme === 'light' ? 'filter invert' : ''}
+                      />
+                    </div>
+                  </>
+                  )}
+                </div>
               </div>
+
+            </div>
+            {/* end of top creators section */}
+            {/* BRRRRRRRRR */}
+            <div className="w-1/2 md:w-full overflow-x-auto rounded-3xl nft-gradient p-4 mt-4 mb-4 ml-4">
+              <h1 className="font-poppins text-white text-nft-white-1 text-2xl minlg:text-4xl font-semibold ml-4 xs:ml-0">
+                Top Buyers
+              </h1>
+              <div
+                className="relative flex-1 max-w-full flex mt-3"
+                ref={parentRefBuyers}
+              >
+                <div
+                  className="flex flex-row w-max overflow-x-scroll no-scrollbar select-none"
+                  ref={scrollRefBuyers}
+                >
+                  {topBuyers && topBuyers.slice(0, 6).map((creator, i) => (
+                    <CreatorCard
+                      key={`creator-${i}`}
+                      rank={i + 1}
+                      creatorImage={images[`creator${10 - i}`]}
+                      creatorName={shortenAddress(creator.buyerAddress)}
+                      creatorEths={creator.total}
+                      darkMode
+                    />
+                  ))}
+
+                  {!hideButtons && (
+                  <>
+                    <div
+                      onClick={() => handleScroll('left', scrollRefBuyers)}
+                      className="absolute w-8 h-8 minlg:w-12 minlg:h-12 top-45 cursor-pointer left-0"
+                    >
+                      <Image
+                        src={images.left}
+                        layout="fill"
+                        objectFit="contain"
+                        alt="left_arrow"
+                        className={theme === 'light' ? 'filter invert' : ''}
+                      />
+                    </div>
+                    <div
+                      onClick={() => handleScroll('right', scrollRefBuyers)}
+                      className="absolute w-8 h-8 minlg:w-12 minlg:h-12 top-45 cursor-pointer right-0"
+                    >
+                      <Image
+                        src={images.right}
+                        layout="fill"
+                        objectFit="contain"
+                        alt="right_arrow"
+                        className={theme === 'light' ? 'filter invert' : ''}
+                      />
+                    </div>
+                  </>
+                  )}
+                </div>
+              </div>
+
             </div>
           </div>
+
           {/* !isLoading && !nfts.length */}
           {!isLoading && !nfts.length ? (
             <h1 className="mt-10 font-poppins dark:text-white text-nft-black-1 text-2xl minlf:text-4xl font-semibold ml-4 xs:ml-0">
