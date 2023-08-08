@@ -149,7 +149,7 @@ const Home = () => {
             {/* BRRRRRRRRR */}
             <div className="w-1/2 md:w-full overflow-x-auto border-2 rounded-3xl border-purple-500 p-4 mt-4 mb-4 mr-4">
               <h1 className="font-poppins dark:text-white text-nft-black-1 text-2xl minlg:text-4xl font-semibold ml-4 xs:ml-0">
-                Top Creators
+                {topCreators && topCreators.length > 0 ? 'Top Creators' : 'Become a top creator by listing your art!'}
               </h1>
               <div
                 className="relative flex-1 max-w-full overflow-x-auto flex mt-3"
@@ -205,7 +205,7 @@ const Home = () => {
             {/* BRRRRRRRRR */}
             <div className="w-1/2 md:w-full overflow-x-auto rounded-3xl nft-gradient p-4 mt-4 mb-4 ml-4">
               <h1 className="font-poppins text-white text-nft-white-1 text-2xl minlg:text-4xl font-semibold ml-4 xs:ml-0">
-                Top Buyers
+                {topBuyers && topBuyers.length > 0 ? 'Top Buyers' : 'Become a top buyer by purchasing your favourite art!'}
               </h1>
               <div
                 className="relative flex-1 max-w-full flex mt-3"
@@ -263,7 +263,7 @@ const Home = () => {
           {/* !isLoading && !nfts.length */}
           {!isLoading && !nfts.length ? (
             <h1 className="mt-10 font-poppins dark:text-white text-nft-black-1 text-2xl minlf:text-4xl font-semibold ml-4 xs:ml-0">
-              That&apos;s weird... No NFTs found. Please try again later.
+              That&apos;s weird... No Artworks found. Please try again later.
             </h1>
           ) : isLoading ? <Loader /> : (
             <div className="mt-10">
