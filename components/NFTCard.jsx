@@ -1,46 +1,87 @@
-import React, { useContext } from 'react';
-// import Image from 'next/image';
+import React, { useContext, useEffect, useState } from 'react';
 import Link from 'next/link';
-
+import Image from 'next/image';
 import { NFTContext } from '../context/NFTContext';
 import images from '../assets';
 import { shortenAddress } from '../utils/shortenAddress';
 
-const NFTCard = ({ nft, onProfilePage }) => {
+const NFTCard = ({ nft }) => {
   const { nftCurrency } = useContext(NFTContext);
+  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setWindowWidth(window.innerWidth);
+    };
+
+    window.addEventListener('resize', handleResize);
+
+    // Cleanup the event listener on component unmount
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []);
 
   return (
-  // The NFT card will act as a link to its details page
     <Link href={{ pathname: '/nft-details', query: nft }}>
-      <div className="flex-1 min-w-215 max-w-max xs:max-w-none sm:w-full sm:min-w-155 minmd:min-w-256 minlg:min-w-327 dark:bg-nft-black-3 bg-white rounded-2xl p-4 m-4 minlg:m-8 sm:my-2 sm:mx-2 cursor-pointer shadow-md">
-        <div className="relative w-full h-52 sm:h-36 minmd:h-60 minlg:h-300 rounded-2xl overflow-hidden">
+      <div className="flex flex-row items-stretch bg-white dark:bg-nft-black-3 rounded-3xl m-4 shadow-md mx-auto max-w-4xl h-100 ml-6 lg:ml-1">
+
+        {/* Image section */}
+        <div style={{ width: '25vh', height: '30vh' }} className="relative rounded-l-3xl overflow-hidden nftCardResponsive">  {/* <-- Set a fixed width and height using inline styles */}
           <img
-          // temporary image if nft.image doesn't exist
             src={nft.image || images[`nft${nft.i}`]}
-            layout="fill"
-            objectFit="cover"
+            objectFit="cover" // This ensures the image covers the container
             alt={`nft-${nft.name}`}
+            className="w-full h-full rounded-l-3xl"
           />
         </div>
-        <div className="mt-3 flex flex-col">
-          <p className="font-poppins dark:text-white text-nft-black-1 font-semibold text-sm minlg:text-xl">
-            {nft.name}
-          </p>
-          <div className="flexBetween mt-1 minlg:mt-3 flex-row xs:flex-col xs:items-start xs:mt-3">
-            <p className="font-poppins dark:text-white text-nft-black-1 font-semibold text-xs minlg:text-lg">
-              {nft.price} <span className="normal">{nftCurrency}</span>
+
+        {/* Details section */}
+        <div className="flex-1 flex flex-col justify-between pl-4 mt-3 mr-3 mb-6">
+          <div>
+            {/* Title */}
+            <p className="font-poppins dark:text-white text-nft-black-1 font-bold text-2xl mb-2 capitalize">
+              {nft.name}
             </p>
-            <p className="font-poppins dark:text-white text-nft-black-1 font-semibold text-xs minlg:text-lg">
-              {nft.seller.length > 10 ? (
-                shortenAddress(onProfilePage ? nft.owner : nft.seller))
-                : (
-                  onProfilePage ? nft.owner : nft.seller
-                )}
+
+            <p className="font-poppins dark:text-white text-nft-black-1 font-semibold text-sm mb-5">
+              by: {shortenAddress(nft.owner)}
             </p>
+
+            <hr className="dark:border-gray-700 mb-3 border-t-2" />
+
+            {/* Description with line clamp */}
+            <p className="font-poppins dark:text-white text-nft-black-1 line-clamp-3 mb-2 sm:text-xs">
+              {nft.description}
+            </p>
+          </div>
+
+          {/* Owner and Sale Info */}
+          <div className="flex justify-between items-center">
+            <span className="font-poppins dark:text-white text-nft-black-1 sm:text-xs">
+              <span className="font-poppins dark:text-white text-nft-black-1 font-semibold">
+                {`${nftCurrency}    `}
+              </span>
+              {nft.price}
+            </span>
+            <span className="bg-green-500 text-white font-semibold px-3 py-1 rounded-full">
+              {windowWidth <= 768
+                ? (
+                  <Image
+                    src={images.leftArrow}
+                    width={30} // or whatever size you want
+                    height={13} // or whatever size you want
+                    objectFit="contain"
+                    alt="arrow"
+                  />
+                )
+                : 'For Sale'}
+            </span>
           </div>
         </div>
       </div>
     </Link>
   );
 };
+
 export default NFTCard;

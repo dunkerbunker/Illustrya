@@ -109,6 +109,35 @@
     align-items: flex-start;
 }
 
+.d-flex {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    height: 1000px; /* You might need to adjust this based on your content */
+}
+.masonry-grid {
+    column-count: 4;
+    column-gap: 16px;
+  }
+  .masonry-item {
+    display: inline-block;
+    width: 100%;
+    break-inside: avoid;
+    margin-bottom: 16px;
+  }
+
+.nftCardResponsive{
+    width: '280px';
+    height: '280px';
+}
+
+.line-clamp-3 {
+    display: -webkit-box;
+    -webkit-line-clamp: 4;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
 @keyframes fadeIn {
     from {
         opacity: 0;

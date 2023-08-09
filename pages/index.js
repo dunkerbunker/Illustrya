@@ -25,6 +25,7 @@ const Home = () => {
   const scrollRefBuyers = useRef(null);
   const parentRefCreators = useRef(null);
   const scrollRefCreators = useRef(null);
+  const masonryRef = useRef(null);
 
   // theme hook to get the current theme
   const { theme } = useTheme();
@@ -67,6 +68,15 @@ const Home = () => {
         break;
     }
   }, [activeSelect]);
+
+  useEffect(() => {
+    const masonryContainer = masonryRef.current;
+    if (masonryContainer) {
+      const children = [...masonryContainer.children];
+      children.sort((a, b) => a.offsetWidth - b.offsetWidth);
+      children.forEach((child) => masonryContainer.appendChild(child));
+    }
+  }, [nfts]);
 
   const onHandleSearch = (value) => {
     // name object is immediatly destructured from the nft object
@@ -263,9 +273,11 @@ const Home = () => {
           {/* !isLoading && !nfts.length */}
           {!isLoading && !nfts.length ? (
             <h1 className="mt-10 font-poppins dark:text-white text-nft-black-1 text-2xl minlf:text-4xl font-semibold ml-4 xs:ml-0">
-              That&apos;s weird... No Artworks found. Please try again later.
+              That&pos;s weird... No Artworks found. Please try again later.
             </h1>
-          ) : isLoading ? <Loader /> : (
+          ) : isLoading ? (
+            <Loader />
+          ) : (
             <div className="mt-10">
               <div className="flexBetween mx-4 xs:mx-0 minlg:mx-8 sm:flex-col sm:items-start">
                 <h1 className="flex-1 before:first:font-poppins dark:text-white text-nft-black-1 text-2xl minlg:text-4xl font-semibold sm:mb-4">
@@ -280,26 +292,11 @@ const Home = () => {
                   />
                 </div>
               </div>
-              {/* creating a flex wrapper and mapping the trending NFT art in it */}
-              <div className="mt-3 w-full flex flex-wrap justify-start md:justify-center">
+              <div className="mt-9 w-full grid grid-cols-2 lg:grid-cols-1 gap-4">
                 {nfts?.map((nft) => (
-                  <NFTCard
-                    key={nft.tokenId}
-                    nft={nft}
-                  />
-                ))}
-                {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((i) => (
-                  <NFTCard
-                    key={`nft-${i}`}
-                    nft={{
-                      i,
-                      name: `Nifty NFT ${i}`,
-                      price: (10 - i * 0.534).toFixed(2),
-                      seller: `0x${makeId(3)}...${makeId(4)}`,
-                      owner: `0x${makeId(3)}...${makeId(4)}`,
-                      description: 'cool NFT on Sale',
-                    }}
-                  />
+                  <div key={nft.tokenId}>
+                    <NFTCard nft={nft} />
+                  </div>
                 ))}
               </div>
             </div>
