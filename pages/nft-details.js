@@ -3,7 +3,7 @@ import Image from 'next/image';
 import { useRouter } from 'next/router';
 
 import { NFTContext } from '../context/NFTContext';
-import { NFTCard, Loader, Button, Modal } from '../components';
+import { Loader, Button, Modal } from '../components';
 import images from '../assets';
 import { shortenAddress } from '../utils/shortenAddress';
 
@@ -80,9 +80,9 @@ const NFTDetails = () => {
     }
   }, [router.isReady]);
 
-  useEffect(() => {
-    console.log('nft', nft);
-  }, [nft]);
+  // useEffect(() => {
+  //   console.log('nft', nft);
+  // }, [nft]);
 
   const checkout = async () => {
     await buyNFT(nft);
@@ -98,6 +98,8 @@ const NFTDetails = () => {
       </div>
     );
   }
+
+  const isAvailableForPurchase = nft.isAvailableForPurchase === "true";
 
   return (
     <div className="relative flex justify-center md:flex-col min-h-screen">
@@ -142,23 +144,34 @@ const NFTDetails = () => {
               </p>
             ) : (
               <div className="font-poppins dark:text-white text-nft-black-1 text-base font-normal p-4 text-justify">
-                <h3 className="text-xl font-semibold mb-4">Ownership History</h3>
-                <ul>
-                  {nft.previousOwners.map((owner, index) => (
-                    <li key={index} className="mb-2">
-                      {owner}
-                    </li>
-                  ))}
-                </ul>
-                <h3 className="text-xl font-semibold mt-6 mb-4">Sale Price History</h3>
-                <ul>
-                  {nft.previousSalePrices.map((price, index) => (
-                    <li key={index} className="mb-2">
-                      {price}
-                    </li>
-                  ))}
-                </ul>
+                {nft.previousOwners && Array.isArray(nft.previousOwners) && nft.previousOwners.length > 0 ? (
+                  <div className="flex flex-col space-y-4">
+                    {nft.previousOwners.map((owner, index) => (
+                      <div key={index} className="flex items-center flex-col">
+                        {index === 0 ? (
+                          <p className="text-center">{`${shortenAddress(owner)} creates artwork`}</p>
+                        ) : (
+                          <p className="text-center">{`${shortenAddress(owner)} buys for ${nft.previousSalePrices[index]} ETH`}</p>
+                        )}
+                        {index !== nft.previousOwners.length - 1 && (
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                          className="w-4 h-4 text-nft-black-1 dark:text-white mt-2"
+                        >
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-center">No ownership history available.</p>
+                )}
               </div>
+
             )}
           </div>
         </div>
@@ -184,12 +197,14 @@ const NFTDetails = () => {
                   You cannot buy your own NFT
                 </p>
               ) : currentAccount === nft.owner.toLowerCase() ? (
-                <Button
-                  btnName="List on Marketplace"
-                  classStyles="mt-3 sm:mt-0 sm:mb-5 sm:ml-4 rounded-xl"
-                  handleClick={() => router.push(`/resell-nft?tokenId=${nft.tokenid}&tokenURI=${nft.tokenURI}`)}
-                />
-              ) : (
+                <button
+                  type="button"
+                  className="nft-gradient minlg:text-lg py-2 px-4 minlg:px-6 font-poppins font-semibold text-white sm:mt-9 sm:mb-5 rounded-xl text-base w-full sm:w-auto"
+                  onClick={() => router.push(`/resell-nft?tokenId=${nft.tokenid}&tokenURI=${nft.tokenURI}`)}
+                >
+                  List on Marketplace
+                </button>
+              ) : isAvailableForPurchase ? (
                 <button
                   type="button"
                   className="nft-gradient minlg:text-lg py-2 px-4 minlg:px-6 font-poppins font-semibold text-white sm:mt-9 sm:mb-5 rounded-xl text-base w-full sm:w-auto"
@@ -197,6 +212,10 @@ const NFTDetails = () => {
                 >
                   {`Buy for ${nft.price} ${nftCurrency}`}
                 </button>
+              ) : (
+                <p className="font-poppins dark:text-white text-nft-black-1 text-base font-normal border border-gray p-2 mt-3 sm:mt-0 sm:ml-4">
+                  NFT is not available for sale
+                </p>
               )}
             </div>
 

@@ -145,7 +145,7 @@ export const NFTProvider = ({ children }) => {
     const data = await contract.fetchMarketItems();
     // fetch all NFT simultaneously
     // map to get data from each NFT
-    const items = await Promise.all(data.map(async ({ tokenId, seller, owner, buyer, price: unformattedPrice }) => {
+    const items = await Promise.all(data.map(async ({ tokenId, isAvailableForPurchase, seller, owner, buyer, price: unformattedPrice }) => {
       const tokenURI = await contract.tokenURI(tokenId);
       // get the metadata from the NFT url
       const { data: { image, name, description } } = await axios.get(tokenURI);
@@ -160,6 +160,7 @@ export const NFTProvider = ({ children }) => {
         price,
         tokenid: tokenId.toNumber(),
         seller,
+        isAvailableForPurchase,
         owner,
         buyer,
         previousOwners, // Added previousOwners field
@@ -180,7 +181,7 @@ export const NFTProvider = ({ children }) => {
     const provider = new ethers.providers.JsonRpcProvider();
     const contract = fetchContract(provider);
     const data = await contract.fetchAllMarketItems();
-    const items = await Promise.all(data.map(async ({ tokenId, seller, owner, buyer, price: unformattedPrice }) => {
+    const items = await Promise.all(data.map(async ({ tokenId, seller, isAvailableForPurchase, owner, buyer, price: unformattedPrice }) => {
       const tokenURI = await contract.tokenURI(tokenId);
       const { data: { image, name, description } } = await axios.get(tokenURI);
       const price = ethers.utils.formatUnits(unformattedPrice.toString(), 'ether');
@@ -194,6 +195,7 @@ export const NFTProvider = ({ children }) => {
         price,
         tokenid: tokenId.toNumber(),
         seller,
+        isAvailableForPurchase,
         owner,
         buyer,
         previousOwners, // Added previousOwners field
@@ -225,12 +227,17 @@ export const NFTProvider = ({ children }) => {
       : await contract.fetchMyNFTs();
 
     // map to get data from each NFT
-    const items = await Promise.all(data.map(async ({ tokenId, seller, owner, price: unformattedPrice }) => {
+    const items = await Promise.all(data.map(async ({ tokenId, seller, isAvailableForPurchase, owner, buyer, price: unformattedPrice }) => {
       const tokenURI = await contract.tokenURI(tokenId);
       // get the metadata from the NFT url
       const { data: { image, name, description } } = await axios.get(tokenURI);
       // need to convert from number to Wei or Gwei
       const price = ethers.utils.formatUnits(unformattedPrice.toString(), 'ether');
+
+      // Fetch token history
+      const [previousOwners, salesHistory] = await contract.getTokenHistory(tokenId);
+      // Convert sale prices from wei to ether
+      const previousSalePrices = salesHistory.map((pricex) => ethers.utils.formatUnits(pricex.toString(), 'ether'));
 
       // returning an object of data of each specific NFT
       return {
@@ -238,6 +245,10 @@ export const NFTProvider = ({ children }) => {
         tokenid: tokenId.toNumber(),
         seller,
         owner,
+        isAvailableForPurchase,
+        buyer,
+        previousOwners, // Added previousOwners field
+        previousSalePrices, // Added previousSalePrices field
         image,
         name,
         description,

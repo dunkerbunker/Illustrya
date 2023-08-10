@@ -45,6 +45,7 @@ contract NFTMarketplace is ERC721URIStorage {
         uint256 price;
         bool sold;
         address buyer;
+        bool isAvailableForPurchase;
     }
 
     // Create a mapping from token ID to an array of previous owners
@@ -131,7 +132,8 @@ contract NFTMarketplace is ERC721URIStorage {
             payable(address(this)),
             price,
             false,
-            address(0)
+            address(0),
+            true
         );
 
         previousOwners[tokenId].push(msg.sender);
@@ -166,6 +168,7 @@ contract NFTMarketplace is ERC721URIStorage {
         idToMarketItem[tokenId].seller = payable(msg.sender);
         // address(this) means nft belongs to the contract/website not a user anymore
         idToMarketItem[tokenId].owner = payable(address(this));
+        idToMarketItem[tokenId].isAvailableForPurchase = true; 
         // as item is not sold anymore as it's relisted
         _itemsSold.decrement();
         // from owner to contract/website
@@ -186,6 +189,7 @@ contract NFTMarketplace is ERC721URIStorage {
         // seller changes from nft market place to no seller
         idToMarketItem[tokenId].seller = payable(address(0));
         idToMarketItem[tokenId].buyer = msg.sender; // Record the buyer
+        idToMarketItem[tokenId].isAvailableForPurchase = false; 
         _itemsSold.increment();
 
         // transfer the NFT ownership from the seller to the buyer

@@ -40,14 +40,14 @@ const Home = () => {
         setNftsCopy(items);
         setIsLoading(false);
       });
-    console.log(nfts);
+    // console.log(nfts);
 
     // fetch the sold nfts from the context
     fetchSoldNFTs()
       .then((items) => {
         setSoldNfts(items);
       });
-    console.log(soldNfts);
+    // console.log(soldNfts);
   }, []);
 
   useEffect(() => {
@@ -141,7 +141,7 @@ const Home = () => {
 
   const topCreators = getSellersWithMostSales(soldNfts);
   // console.log('top creators', topCreators);
-  console.log('nfts', soldNfts);
+  // console.log('nfts', soldNfts);
   const topBuyers = getBuyers(soldNfts);
   // console.log('top buyers', topBuyers);
 

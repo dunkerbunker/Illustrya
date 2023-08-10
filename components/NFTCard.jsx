@@ -14,6 +14,8 @@ const NFTCard = ({ nft }) => {
       setWindowWidth(window.innerWidth);
     };
 
+    console.log(nft);
+
     window.addEventListener('resize', handleResize);
 
     // Cleanup the event listener on component unmount
