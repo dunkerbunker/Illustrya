@@ -99,7 +99,7 @@ const NFTDetails = () => {
     );
   }
 
-  const isAvailableForPurchase = nft.isAvailableForPurchase === "true";
+  const isAvailableForPurchase = nft.isAvailableForPurchase === 'true';
 
   return (
     <div className="relative flex justify-center md:flex-col min-h-screen">

@@ -66,20 +66,19 @@ const NFTCard = ({ nft }) => {
               </span>
               {nft.price}
             </span>
-            <span className="bg-green-500 text-white font-semibold px-3 py-1 rounded-full">
-              {windowWidth <= 768
-                ? (
-                  <Image
-                    src={images.leftArrow}
-                    width={30} // or whatever size you want
-                    height={13} // or whatever size you want
-                    objectFit="contain"
-                    alt="arrow"
-                  />
-                )
-                : 'For Sale'}
+            <span className={`font-semibold px-3 py-1 rounded-full ${nft.isAvailableForPurchase ? 'bg-green-500 text-white' : 'bg-red-500 text-white'}`}>
+              {windowWidth <= 768 ? (
+                <Image
+                  src={images.leftArrow}
+                  width={30} // or whatever size you want
+                  height={13} // or whatever size you want
+                  objectFit="contain"
+                  alt="arrow"
+                />
+              ) : nft.isAvailableForPurchase ? 'For Sale' : 'Sold'}
             </span>
           </div>
+
         </div>
       </div>
     </Link>

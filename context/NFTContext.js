@@ -142,7 +142,7 @@ export const NFTProvider = ({ children }) => {
 
     const provider = new ethers.providers.JsonRpcProvider();
     const contract = fetchContract(provider);
-    const data = await contract.fetchMarketItems();
+    const data = await contract.fetchAllMarketItems();
     // fetch all NFT simultaneously
     // map to get data from each NFT
     const items = await Promise.all(data.map(async ({ tokenId, isAvailableForPurchase, seller, owner, buyer, price: unformattedPrice }) => {
