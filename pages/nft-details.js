@@ -67,6 +67,11 @@ const NFTDetails = () => {
   const router = useRouter();
   const [paymentModal, setPaymentModal] = useState(false);
   const [successModal, setSuccessModal] = useState(false);
+  const [activeTab, setActiveTab] = useState('details');
+
+  const handleTabChange = (tab) => {
+    setActiveTab(tab);
+  };
 
   useEffect(() => {
     if (router.isReady) {
@@ -74,6 +79,10 @@ const NFTDetails = () => {
       setIsLoading(false);
     }
   }, [router.isReady]);
+
+  useEffect(() => {
+    console.log('nft', nft);
+  }, [nft]);
 
   const checkout = async () => {
     await buyNFT(nft);
@@ -107,21 +116,56 @@ const NFTDetails = () => {
         <div className="flex flex-col items-center">
           <h2 className="font-poppins dark:text-white text-nft-black-1 font-semibold text-6xl minlg:text-5xl text-center my-8">{nft.name}</h2>
           <div className="flex flex-row my-4">
-            <button className="font-poppins dark:text-white text-nft-black-1 text-2xl minlg:text-xl font-medium border-b-2 border-transparent pb-1 focus:outline-none mr-8">
+            <button
+              type="button"
+              className={`font-poppins dark:text-white text-nft-black-1 text-2xl minlg:text-xl font-medium border-b-2 ${
+                activeTab === 'details' ? 'border-primary' : 'border-transparent'
+              } pb-1 focus:outline-none mr-8`}
+              onClick={() => handleTabChange('details')}
+            >
               Details
             </button>
-            <button className="font-poppins dark:text-white text-nft-black-1 text-2xl minlg:text-xl font-medium border-b-2 border-transparent pb-1 focus:outline-none">
+            <button
+              type="button"
+              className={`font-poppins dark:text-white text-nft-black-1 text-2xl minlg:text-xl font-medium border-b-2 ${
+                activeTab === 'history' ? 'border-primary' : 'border-transparent'
+              } pb-1 focus:outline-none`}
+              onClick={() => handleTabChange('history')}
+            >
               History
             </button>
           </div>
           <div className="w-full mt-6 text-center">
-            <p className="font-poppins dark:text-white text-nft-black-1 text-base font-normal p-4 text-justify">{nft.description}</p>
+            {activeTab === 'details' ? (
+              <p className="font-poppins dark:text-white text-nft-black-1 text-base font-normal p-4 text-justify">
+                {nft.description}
+              </p>
+            ) : (
+              <div className="font-poppins dark:text-white text-nft-black-1 text-base font-normal p-4 text-justify">
+                <h3 className="text-xl font-semibold mb-4">Ownership History</h3>
+                <ul>
+                  {nft.previousOwners.map((owner, index) => (
+                    <li key={index} className="mb-2">
+                      {owner}
+                    </li>
+                  ))}
+                </ul>
+                <h3 className="text-xl font-semibold mt-6 mb-4">Sale Price History</h3>
+                <ul>
+                  {nft.previousSalePrices.map((price, index) => (
+                    <li key={index} className="mb-2">
+                      {price}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
           </div>
         </div>
 
-        <div className="mt-10">
-          <p className="font-poppins dark:text-white text-nft-black-1 text-2xl minlg:text-base font-normal ml-4">Creator</p>
-          <div className="flex flex-row items-center justify-between mt-3 ml-4">
+        <div className="mt-10 mb-10">
+          <p className="font-poppins dark:text-white text-nft-black-1 text-2xl minlg:text-base font-normal ml-4">Owner</p>
+          <div className="flex flex-row sm:flex-col justify-between mt-3 ml-4">
             <div className="flex items-center">
               <div className="relative w-24 h-24 minlg:w-40 minlg:h-40 mr-4">
                 <Image
@@ -131,34 +175,31 @@ const NFTDetails = () => {
                 />
               </div>
               <p className="font-poppins dark:text-white text-nft-black-1 text-xl minlg:text-lg font-semibold">
-                {shortenAddress(nft.seller)}
+                {shortenAddress(nft.owner)}
               </p>
             </div>
-
-            <div className="flex flex-row sm:flex-col justify-center">
+            <div className="flex flex-row sm:flex-col w-72 h-12 md:w-full mt-6 ml-9 sm:mt-0 sm:ml-0">
               {currentAccount === nft.seller.toLowerCase() ? (
-              // if current account is the seller of the nft
-                <p className="font-poppins dark:text-white text-nft-black-1 text-base font-normal border border-gray p-2">
+                <p className="font-poppins dark:text-white text-nft-black-1 text-base font-normal border border-gray p-2 mt-3 sm:mt-0 sm:ml-4">
                   You cannot buy your own NFT
                 </p>
               ) : currentAccount === nft.owner.toLowerCase() ? (
-              // if current account is the owner of the nft
                 <Button
                   btnName="List on Marketplace"
-                  classStyles="mr-5 sm:mr-0 sm:mb-5 rounded-xl"
+                  classStyles="mt-3 sm:mt-0 sm:mb-5 sm:ml-4 rounded-xl"
                   handleClick={() => router.push(`/resell-nft?tokenId=${nft.tokenid}&tokenURI=${nft.tokenURI}`)}
                 />
               ) : (
-              // if current account is a buyer of the nft
                 <button
                   type="button"
-                  className="nft-gradient minlg:text-lg py-2 px-6 minlg:px-8 font-poppins font-semibold text-white mr-5 sm:mr-0 sm:mb-5 rounded-xl text-xl"
+                  className="nft-gradient minlg:text-lg py-2 px-4 minlg:px-6 font-poppins font-semibold text-white sm:mt-9 sm:mb-5 rounded-xl text-base w-full sm:w-auto"
                   onClick={() => setPaymentModal(true)}
                 >
                   {`Buy for ${nft.price} ${nftCurrency}`}
                 </button>
               )}
             </div>
+
           </div>
         </div>
 
