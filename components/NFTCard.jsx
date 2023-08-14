@@ -1,6 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import axios from 'axios';
 import { NFTContext } from '../context/NFTContext';
 import images from '../assets';
 import { shortenAddress } from '../utils/shortenAddress';
@@ -8,13 +9,56 @@ import { shortenAddress } from '../utils/shortenAddress';
 const NFTCard = ({ nft }) => {
   const { nftCurrency } = useContext(NFTContext);
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+  const [likes, setLikes] = useState(0); // Track the number of likes
+  const [isLiked, setIsLiked] = useState(false);
+
+  // const handleLike = () => {
+  //   if (!isLiked) {
+  //     setLikes(likes + 1);
+  //   } else {
+  //     setLikes(likes - 1);
+  //   }
+  //   setIsLiked(!isLiked);
+  // };
+
+  const handleLike = async (e, tokenID) => {
+    e.preventDefault();
+    const baseURL = 'http://localhost:3000/'; // Update the base URL to your server's URL
+
+    try {
+      if (!isLiked) {
+        // Increment the likes count
+        setLikes(likes + 1);
+        setIsLiked(true);
+
+        // Make a POST request to your server to like the NFT
+        console.log(tokenID);
+        try {
+          const response = await axios.post(`${baseURL}/nfts/like`, { tokenID });
+          console.log(response.data); // Log the response data
+        } catch (error) {
+          console.error('Error:', error);
+        }
+      } else {
+        // Decrement the likes count
+        setLikes(likes - 1);
+        setIsLiked(false);
+
+        // Make a DELETE request to your server to unlike the NFT
+        const response = await axios.delete(`${baseURL}/nfts/like`, { data: { tokenID } });
+        console.log(response.data); // Likes count from the server
+      }
+    } catch (error) {
+      console.error('Error handling like:', error);
+    }
+  };
 
   useEffect(() => {
     const handleResize = () => {
       setWindowWidth(window.innerWidth);
     };
 
-    console.log(nft);
+    // console.log(nft);
 
     window.addEventListener('resize', handleResize);
 
@@ -66,17 +110,53 @@ const NFTCard = ({ nft }) => {
               </span>
               {nft.price}
             </span>
-            <span className={`font-semibold px-3 py-1 rounded-full ${nft.isAvailableForPurchase ? 'bg-green-500 text-white' : 'bg-red-500 text-white'}`}>
-              {windowWidth <= 768 ? (
-                <Image
-                  src={images.leftArrow}
-                  width={30} // or whatever size you want
-                  height={13} // or whatever size you want
-                  objectFit="contain"
-                  alt="arrow"
-                />
-              ) : nft.isAvailableForPurchase ? 'For Sale' : 'Sold'}
-            </span>
+            <div className="flex items-center">
+              <span className="cursor-pointer ml-2 mr-3" onClick={(e) => handleLike(e, nft.tokenid)}>
+                {/* {likes} */}
+                {/* Render the appropriate heart icon based on the like count */}
+                {likes > 0 ? (
+                  <Image
+                    src={images.redHeart}
+                    width={60}
+                    height={30}
+                    objectFit="contain"
+                    alt="Red Heart"
+                  />
+                ) : (
+                  <>
+                    <div className="block dark:hidden">
+                      <Image
+                        src={images.whiteHeart}
+                        width={38}
+                        height={38}
+                        objectFit="contain"
+                        alt="White Heart"
+                      />
+                    </div>
+                    <div className="hidden dark:block">
+                      <Image
+                        src={images.whiteHeartDark}
+                        width={38}
+                        height={38}
+                        objectFit="contain"
+                        alt="White Heart"
+                      />
+                    </div>
+                  </>
+                )}
+              </span>
+              <span className={`font-semibold px-3 py-1 rounded-full ${nft.isAvailableForPurchase ? 'bg-green-500 text-white' : 'bg-red-500 text-white'}`}>
+                {windowWidth <= 768 ? (
+                  <Image
+                    src={images.leftArrow}
+                    width={30}
+                    height={13}
+                    objectFit="contain"
+                    alt="arrow"
+                  />
+                ) : nft.isAvailableForPurchase ? 'For Sale' : 'Sold'}
+              </span>
+            </div>
           </div>
 
         </div>

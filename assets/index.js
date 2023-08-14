@@ -38,6 +38,9 @@ import headerbg from './headerbg.png';
 import loader from './loader.gif';
 import arrow from './arrow.png';
 import leftArrow from './leftarrow.png';
+import whiteHeart from './white-heart.png';
+import redHeart from './red-heart.png';
+import whiteHeartDark from './white-heart-dark.png';
 
 export default {
   heartOutline,
@@ -80,4 +83,7 @@ export default {
   loader,
   arrow,
   leftArrow,
+  whiteHeart,
+  redHeart,
+  whiteHeartDark,
 };
