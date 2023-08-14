@@ -3,7 +3,7 @@ const nextConfig = {
   reactStrictMode: true,
   swcMinify: true,
   images: {
-    domains: ['nftartmarketplace.infura-ipfs.io', 'ipfs.infura.io'],
+    domains: ['nftartmarketplace.infura-ipfs.io', 'ipfs.infura.io', 'localhost'],
   },
   env: {
     BASE_URL: process.env.BASE_URL,

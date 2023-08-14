@@ -23,7 +23,7 @@ const NFTCard = ({ nft }) => {
 
   const handleLike = async (e, tokenID) => {
     e.preventDefault();
-    const baseURL = 'http://localhost:3000/'; // Update the base URL to your server's URL
+    const baseURL = 'http://localhost:3000'; // Update the base URL to your server's URL
 
     try {
       if (!isLiked) {
@@ -32,12 +32,24 @@ const NFTCard = ({ nft }) => {
         setIsLiked(true);
 
         // Make a POST request to your server to like the NFT
-        console.log(tokenID);
         try {
           const response = await axios.post(`${baseURL}/nfts/like`, { tokenID });
           console.log(response.data); // Log the response data
         } catch (error) {
-          console.error('Error:', error);
+          if (error.response && error.response.status === 404) {
+            // If the NFT does not exist, initialize it and then proceed with the like action
+            try {
+              const initResponse = await axios.post(`${baseURL}/nfts/initialize`, { tokenID });
+              console.log('Initialized NFT:', initResponse.data); // Log the initialized NFT
+              // Now, perform the like action again after initialization
+              const likeResponse = await axios.post(`${baseURL}/nfts/like`, { tokenID });
+              console.log(likeResponse.data); // Log the response data after like
+            } catch (initError) {
+              console.error('Error initializing NFT:', initError);
+            }
+          } else {
+            console.error('Error liking NFT:', error);
+          }
         }
       } else {
         // Decrement the likes count
@@ -45,8 +57,12 @@ const NFTCard = ({ nft }) => {
         setIsLiked(false);
 
         // Make a DELETE request to your server to unlike the NFT
-        const response = await axios.delete(`${baseURL}/nfts/like`, { data: { tokenID } });
-        console.log(response.data); // Likes count from the server
+        try {
+          const response = await axios.delete(`${baseURL}/nfts/like`, { data: { tokenID } });
+          console.log(response.data); // Likes count from the server
+        } catch (error) {
+          console.error('Error unliking NFT:', error);
+        }
       }
     } catch (error) {
       console.error('Error handling like:', error);
@@ -117,8 +133,8 @@ const NFTCard = ({ nft }) => {
                 {likes > 0 ? (
                   <Image
                     src={images.redHeart}
-                    width={60}
-                    height={30}
+                    width={38}
+                    height={38}
                     objectFit="contain"
                     alt="Red Heart"
                   />
