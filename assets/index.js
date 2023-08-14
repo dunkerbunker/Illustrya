@@ -41,6 +41,8 @@ import leftArrow from './leftarrow.png';
 import whiteHeart from './white-heart.png';
 import redHeart from './red-heart.png';
 import whiteHeartDark from './white-heart-dark.png';
+import editLight from './editLight.png';
+import editDark from './editDark.png';
 
 export default {
   heartOutline,
@@ -86,4 +88,6 @@ export default {
   whiteHeart,
   redHeart,
   whiteHeartDark,
+  editLight,
+  editDark,
 };
