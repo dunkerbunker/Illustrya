@@ -35,7 +35,7 @@ export const getBuyers = (nfts) => {
           buyerObject[buyer].total += price;
         }
       });
-      console.log(buyerObject);
+      // console.log(buyerObject);
       return buyerObject;
     }, {});
 

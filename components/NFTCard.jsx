@@ -7,58 +7,59 @@ import images from '../assets';
 import { shortenAddress } from '../utils/shortenAddress';
 
 const NFTCard = ({ nft }) => {
-  const { nftCurrency } = useContext(NFTContext);
+  const { nftCurrency, currentAccount } = useContext(NFTContext);
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
-  const [likes, setLikes] = useState(0); // Track the number of likes
   const [isLiked, setIsLiked] = useState(false);
 
-  // const handleLike = () => {
-  //   if (!isLiked) {
-  //     setLikes(likes + 1);
-  //   } else {
-  //     setLikes(likes - 1);
-  //   }
-  //   setIsLiked(!isLiked);
-  // };
+  const baseURL = 'http://localhost:3000';
+  const walletAddress = currentAccount;
+
+  const initializeNFT = async () => {
+    try {
+      const token = nft.tokenid;
+      const response = await axios.get(`${baseURL}/nfts/?`, { params: { token } });
+      // Check if currentAccount is in the likedBy list
+      if (response.data[0].likedBy.includes(currentAccount)) {
+        setIsLiked(true);
+      } else {
+        setIsLiked(false);
+      }
+    } catch (error) {
+      console.error('Error initializing NFT:', error);
+    }
+  };
 
   const handleLike = async (e, tokenID) => {
     e.preventDefault();
-    const baseURL = 'http://localhost:3000'; // Update the base URL to your server's URL
 
     try {
       if (!isLiked) {
         // Increment the likes count
-        setLikes(likes + 1);
         setIsLiked(true);
 
         // Make a POST request to your server to like the NFT
         try {
-          const response = await axios.post(`${baseURL}/nfts/like`, { tokenID });
+          const response = await axios.post(`${baseURL}/nfts/like`, { tokenID, walletAddress });
           console.log(response.data); // Log the response data
         } catch (error) {
-          if (error.response && error.response.status === 404) {
-            // If the NFT does not exist, initialize it and then proceed with the like action
-            try {
-              const initResponse = await axios.post(`${baseURL}/nfts/initialize`, { tokenID });
-              console.log('Initialized NFT:', initResponse.data); // Log the initialized NFT
-              // Now, perform the like action again after initialization
-              const likeResponse = await axios.post(`${baseURL}/nfts/like`, { tokenID });
-              console.log(likeResponse.data); // Log the response data after like
-            } catch (initError) {
-              console.error('Error initializing NFT:', initError);
-            }
-          } else {
-            console.error('Error liking NFT:', error);
+          console.error('Error liking NFT:', error);
+          // If liking the NFT returns an error, attempt to initialize it and then retry liking
+          try {
+            const initResponse = await axios.post(`${baseURL}/nfts/initialize`, { tokenID });
+            console.log('Initialized NFT:', initResponse.data); // Log the initialized NFT
+            // Retry the like action after initialization
+            const retryLikeResponse = await axios.post(`${baseURL}/nfts/like`, { tokenID, walletAddress });
+            console.log(retryLikeResponse.data); // Log the response data after retrying like
+          } catch (initError) {
+            console.error('Error initializing NFT:', initError);
           }
         }
       } else {
-        // Decrement the likes count
-        setLikes(likes - 1);
         setIsLiked(false);
 
         // Make a DELETE request to your server to unlike the NFT
         try {
-          const response = await axios.delete(`${baseURL}/nfts/like`, { data: { tokenID } });
+          const response = await axios.delete(`${baseURL}/nfts/like`, { data: { tokenID, walletAddress } });
           console.log(response.data); // Likes count from the server
         } catch (error) {
           console.error('Error unliking NFT:', error);
@@ -70,6 +71,9 @@ const NFTCard = ({ nft }) => {
   };
 
   useEffect(() => {
+    // Initialize the NFT
+    initializeNFT();
+
     const handleResize = () => {
       setWindowWidth(window.innerWidth);
     };
@@ -130,7 +134,7 @@ const NFTCard = ({ nft }) => {
               <span className="cursor-pointer ml-2 mr-3" onClick={(e) => handleLike(e, nft.tokenid)}>
                 {/* {likes} */}
                 {/* Render the appropriate heart icon based on the like count */}
-                {likes > 0 ? (
+                {isLiked ? (
                   <Image
                     src={images.redHeart}
                     width={38}

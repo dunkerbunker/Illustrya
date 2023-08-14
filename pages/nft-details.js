@@ -1,7 +1,7 @@
 import { useState, useEffect, useContext } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
-
+import axios from 'axios';
 import { NFTContext } from '../context/NFTContext';
 import { Loader, Button, Modal } from '../components';
 import images from '../assets';
@@ -68,6 +68,19 @@ const NFTDetails = () => {
   const [paymentModal, setPaymentModal] = useState(false);
   const [successModal, setSuccessModal] = useState(false);
   const [activeTab, setActiveTab] = useState('details');
+  const [likesCount, setLikesCount] = useState(0);
+  const baseURL = 'http://localhost:3000';
+
+  const getLikes = async (tokenID) => {
+    try {
+      const token = tokenID;
+      const response = await axios.get(`${baseURL}/nfts/?`, { params: { token } });
+      const likes = response.data[0].likesCount;
+      setLikesCount(likes);
+    } catch (error) {
+      console.error('Error initializing NFT:', error);
+    }
+  };
 
   const handleTabChange = (tab) => {
     setActiveTab(tab);
@@ -77,6 +90,7 @@ const NFTDetails = () => {
     if (router.isReady) {
       setNft(router.query);
       setIsLoading(false);
+      getLikes(nft.tokenId);
     }
   }, [router.isReady]);
 
@@ -118,6 +132,30 @@ const NFTDetails = () => {
         <div className="flex flex-col items-center">
           <h2 className="font-poppins dark:text-white text-nft-black-1 font-semibold text-6xl minlg:text-5xl text-center my-8">{nft.name}</h2>
           <div className="flex flex-row my-4">
+            <div className="font-poppins dark:text-white text-nft-black-1 text-2xl minlg:text-xl font-medium pb-1 focus:outline-none mr-8">
+              <div className="flex items-center">
+                <div className="block dark:hidden">
+                  <Image
+                    src={images.whiteHeart}
+                    width={30}
+                    height={30}
+                    objectFit="contain"
+                    alt="White Heart"
+                  />
+                </div>
+                <div className="hidden dark:block">
+                  <Image
+                    src={images.whiteHeartDark}
+                    width={30}
+                    height={30}
+                    objectFit="contain"
+                    alt="White Heart"
+                  />
+                </div>
+                <div className="ml-2">{likesCount} Likes</div>
+              </div>
+            </div>
+
             <button
               type="button"
               className={`font-poppins dark:text-white text-nft-black-1 text-2xl minlg:text-xl font-medium border-b-2 ${
