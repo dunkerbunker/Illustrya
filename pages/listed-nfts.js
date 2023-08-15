@@ -1,12 +1,37 @@
 import { useState, useEffect, useContext } from 'react';
+import axios from 'axios';
 
 import { NFTContext } from '../context/NFTContext';
 import { NFTCard, Loader } from '../components';
 
 const ListedNFTs = () => {
-  const { fetchMyNFTsOrListedNFTs } = useContext(NFTContext);
+  const { fetchMyNFTsOrListedNFTs, currentAccount } = useContext(NFTContext);
   const [nfts, setNfts] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+
+  const initiateWalletIfConnected = async () => {
+    if (currentAccount) {
+      try {
+        // Call the "Get User by Wallet Address" API
+        console.log(currentAccount);
+        await axios.get(`http://localhost:3000/users/${currentAccount}`);
+      } catch (error) {
+        // console.log('Error getting user:', error);
+        try {
+          await axios.post('http://localhost:3000/users', {
+            walletAddress: currentAccount,
+          });
+          console.log('User created successfully.');
+        } catch (error2) {
+          console.log('Error creating user:', error);
+        }
+      }
+    }
+  };
+
+  useEffect(() => {
+    initiateWalletIfConnected();
+  }, [currentAccount]);
 
   useEffect(() => {
     // fetch the nfts from the context

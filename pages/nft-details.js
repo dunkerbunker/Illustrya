@@ -71,6 +71,30 @@ const NFTDetails = () => {
   const [likesCount, setLikesCount] = useState(0);
   const baseURL = 'http://localhost:3000';
 
+  const initiateWalletIfConnected = async () => {
+    if (currentAccount) {
+      try {
+        // Call the "Get User by Wallet Address" API
+        console.log(currentAccount);
+        await axios.get(`http://localhost:3000/users/${currentAccount}`);
+      } catch (error) {
+        // console.log('Error getting user:', error);
+        try {
+          await axios.post('http://localhost:3000/users', {
+            walletAddress: currentAccount,
+          });
+          console.log('User created successfully.');
+        } catch (error2) {
+          console.log('Error creating user:', error);
+        }
+      }
+    }
+  };
+
+  useEffect(() => {
+    initiateWalletIfConnected();
+  }, [currentAccount]);
+
   const getLikes = async (tokenID) => {
     try {
       const token = tokenID;

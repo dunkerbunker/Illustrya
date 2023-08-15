@@ -1,8 +1,9 @@
-import { useState, useMemo, useCallback, useContext } from 'react';
+import { useState, useMemo, useCallback, useContext, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { useDropzone } from 'react-dropzone';
 import Image from 'next/image';
 import { useTheme } from 'next-themes';
+import axios from 'axios';
 
 import { NFTContext } from '../context/NFTContext';
 import { Button, Input, Loader } from '../components';
@@ -14,7 +15,31 @@ const CreateNFT = () => {
   const { theme } = useTheme();
   const router = useRouter();
   //  getting uploadToIPFS function from NFTContext
-  const { uploadToIPFS, createNFT, isLoadingNFT } = useContext(NFTContext);
+  const { uploadToIPFS, createNFT, isLoadingNFT, currentAccount } = useContext(NFTContext);
+
+  const initiateWalletIfConnected = async () => {
+    if (currentAccount) {
+      try {
+        // Call the "Get User by Wallet Address" API
+        console.log(currentAccount);
+        await axios.get(`http://localhost:3000/users/${currentAccount}`);
+      } catch (error) {
+        // console.log('Error getting user:', error);
+        try {
+          await axios.post('http://localhost:3000/users', {
+            walletAddress: currentAccount,
+          });
+          console.log('User created successfully.');
+        } catch (error2) {
+          console.log('Error creating user:', error);
+        }
+      }
+    }
+  };
+
+  useEffect(() => {
+    initiateWalletIfConnected();
+  }, [currentAccount]);
 
   // function to be used in dropzone when dropped
   const onDrop = useCallback(async (acceptedFile) => {

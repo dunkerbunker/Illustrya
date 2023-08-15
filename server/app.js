@@ -22,7 +22,7 @@ app.use(express.json());
 // Routes
 const combinedRoutes = require('./routes/routes');
 
-app.use('/nfts', combinedRoutes);
+app.use('/', combinedRoutes);
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {

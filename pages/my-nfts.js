@@ -1,6 +1,7 @@
 import { useState, useEffect, useContext } from 'react';
 import Image from 'next/image';
 import { useTheme } from 'next-themes';
+import axios from 'axios';
 
 import { useDropzone } from 'react-dropzone';
 import { NFTContext } from '../context/NFTContext';
@@ -18,6 +19,26 @@ const MyNFTs = () => {
   const [isBannerModalOpen, setIsBannerModalOpen] = useState(false);
   const [selectedFile, setSelectedFile] = useState(null);
   const { theme } = useTheme();
+
+  const initiateWalletIfConnected = async () => {
+    if (currentAccount) {
+      try {
+        // Call the "Get User by Wallet Address" API
+        console.log(currentAccount);
+        await axios.get(`http://localhost:3000/users/${currentAccount}`);
+      } catch (error) {
+        // console.log('Error getting user:', error);
+        try {
+          await axios.post('http://localhost:3000/users', {
+            walletAddress: currentAccount,
+          });
+          console.log('User created successfully.');
+        } catch (error2) {
+          console.log('Error creating user:', error);
+        }
+      }
+    }
+  };
 
   const handleBannerOpenModal = () => {
     setIsBannerModalOpen(true);
@@ -54,6 +75,10 @@ const MyNFTs = () => {
         setIsLoading(false);
       });
   }, []);
+
+  useEffect(() => {
+    initiateWalletIfConnected();
+  }, [currentAccount]);
 
   useEffect(() => {
     const sortedNfts = [...nfts];

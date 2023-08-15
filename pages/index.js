@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useContext } from 'react';
 import Image from 'next/image';
 import { useTheme } from 'next-themes';
+import axios from 'axios';
 
 import { NFTContext } from '../context/NFTContext';
 import { Banner, CreatorCard, Loader, NFTCard, SearchBar } from '../components';
@@ -30,7 +31,7 @@ const Home = () => {
   // theme hook to get the current theme
   const { theme } = useTheme();
   // context to get the data from the context
-  const { fetchNFTs, fetchSoldNFTs } = useContext(NFTContext);
+  const { fetchNFTs, fetchSoldNFTs, currentAccount } = useContext(NFTContext);
 
   useEffect(() => {
     // fetch the nfts from the context
@@ -50,6 +51,29 @@ const Home = () => {
     // console.log(soldNfts);
   }, []);
 
+  const initiateWalletIfConnected = async () => {
+    if (currentAccount) {
+      try {
+        // Call the "Get User by Wallet Address" API
+        console.log(currentAccount);
+        await axios.get(`http://localhost:3000/users/${currentAccount}`);
+      } catch (error) {
+        // console.log('Error getting user:', error);
+        try {
+          await axios.post('http://localhost:3000/users', {
+            walletAddress: currentAccount,
+          });
+          console.log('User created successfully.');
+        } catch (error2) {
+          console.log('Error creating user:', error);
+        }
+      }
+    }
+  };
+
+  useEffect(() => {
+    initiateWalletIfConnected();
+  }, [currentAccount]);
   useEffect(() => {
     const sortedNfts = [...nfts];
 

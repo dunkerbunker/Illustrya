@@ -7,12 +7,36 @@ import images from '../assets';
 import { Button, Loader } from '../components';
 
 const ResellNFT = () => {
-  const { createSale, isLoadingNFT, nftCurrency } = useContext(NFTContext);
+  const { createSale, isLoadingNFT, nftCurrency, currentAccount } = useContext(NFTContext);
   const router = useRouter();
   const { tokenId, tokenURI } = router.query;
   const [price, setPrice] = useState('');
 
   const [nft, setNFT] = useState(null);
+
+  const initiateWalletIfConnected = async () => {
+    if (currentAccount) {
+      try {
+        // Call the "Get User by Wallet Address" API
+        console.log(currentAccount);
+        await axios.get(`http://localhost:3000/users/${currentAccount}`);
+      } catch (error) {
+        // console.log('Error getting user:', error);
+        try {
+          await axios.post('http://localhost:3000/users', {
+            walletAddress: currentAccount,
+          });
+          console.log('User created successfully.');
+        } catch (error2) {
+          console.log('Error creating user:', error);
+        }
+      }
+    }
+  };
+
+  useEffect(() => {
+    initiateWalletIfConnected();
+  }, [currentAccount]);
 
   const fetchNFT = async () => {
     if (!tokenURI) return;
