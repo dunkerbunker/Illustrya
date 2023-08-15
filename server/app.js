@@ -20,9 +20,9 @@ db.once('open', () => {
 app.use(express.json());
 
 // Routes
-const nftRoutes = require('./routes/routes');
+const combinedRoutes = require('./routes/routes');
 
-app.use('/nfts', nftRoutes);
+app.use('/nfts', combinedRoutes);
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
