@@ -1,3 +1,4 @@
+const sharp = require('sharp');
 const User = require('../models/UserModel');
 
 // Function to create a new user
@@ -81,15 +82,39 @@ exports.modifyUser = async (req, res) => {
     user.nickname = nickname;
     user.bio = bio;
 
+    // console.log(req);
+
+    if (req.body.profileImage === 'delete') {
+      user.profileImage = null;
+      user.profileImageType = null;
+    }
+
+    if (req.body.bannerImage === 'delete') {
+      user.bannerImage = null;
+      user.bannerImageType = null;
+    }
+
     if (req.files) {
       const { bannerImage, profileImage } = req.files;
       if (bannerImage) {
-        user.bannerImage = bannerImage.data;
-        user.bannerImageType = bannerImage.mimetype;
+        // Compress and process the banner image
+        const compressedBannerImage = await sharp(bannerImage.data)
+          .resize(800, 400) // Resize the image to the desired dimensions
+          .jpeg({ quality: 70 }) // Compress and save as JPEG format
+          .toBuffer();
+
+        user.bannerImage = compressedBannerImage;
+        user.bannerImageType = 'image/jpeg'; // Set the MIME type accordingly
       }
       if (profileImage) {
-        user.profileImage = profileImage.data;
-        user.profileImageType = profileImage.mimetype;
+        // Compress and process the profile image
+        const compressedProfileImage = await sharp(profileImage.data)
+          .resize(200, 200) // Resize the image to the desired dimensions
+          .jpeg({ quality: 40 }) // Compress and save as JPEG format
+          .toBuffer();
+
+        user.profileImage = compressedProfileImage;
+        user.profileImageType = 'image/jpeg'; // Set the MIME type accordingly
       }
     }
 

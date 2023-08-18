@@ -85,6 +85,32 @@ const MyNFTs = () => {
     window.location.reload();
   };
 
+  const handleBannerSubmitRemove = async () => {
+    const formData = new FormData();
+    formData.append('bannerImage', 'delete');
+    try {
+      const response = await axios.put(`http://localhost:3000/users/${currentAccount}`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data', // Important header for file upload
+        },
+      });
+
+      if (response.status === 200) {
+        console.log('banner image removed successfully.');
+        // Close the modal and perform any other necessary actions
+        setIsBannerModalOpen(false);
+        setSelectedFile(null);
+      } else {
+        console.log('Error removing banner image.');
+      }
+    } catch (error) {
+      console.log('Error removing banner image:', error);
+    }
+
+    // refresh the page
+    window.location.reload();
+  };
+
   const handleProfileOpenModal = () => {
     setIsProfileModalOpen(true);
   };
@@ -119,6 +145,32 @@ const MyNFTs = () => {
       }
     } catch (error) {
       console.log('Error updating banner image:', error);
+    }
+
+    // refresh the page
+    window.location.reload();
+  };
+
+  const handleProfileSubmitRemove = async () => {
+    const formData = new FormData();
+    formData.append('profileImage', 'delete');
+    try {
+      const response = await axios.put(`http://localhost:3000/users/${currentAccount}`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data', // Important header for file upload
+        },
+      });
+
+      if (response.status === 200) {
+        console.log('Profile image removed successfully.');
+        // Close the modal and perform any other necessary actions
+        setIsBannerModalOpen(false);
+        setSelectedFile(null);
+      } else {
+        console.log('Error removing profile image.');
+      }
+    } catch (error) {
+      console.log('Error removing profile image:', error);
     }
 
     // refresh the page
@@ -373,22 +425,28 @@ const MyNFTs = () => {
                 )}
               </div>
               {/* Display the selected file */}
-              {selectedFile && (
-              <div className="p-4">
-                <p className="font-poppins dark:text-white text-nft-black-1 font-semibold text-lg">
-                  Selected File:  &nbsp;
-                  <span className="font-poppins dark:text-white text-nft-black-1 text-lg font-normal mt-2">
-                    {selectedFile.name}
-                  </span>
-                </p>
-              </div>
+              {selectedFile ? (
+                <div className="p-4">
+                  <p className="font-poppins dark:text-white text-nft-black-1 font-semibold text-lg">
+                    Selected File:  &nbsp;
+                    <span className="font-poppins dark:text-white text-nft-black-1 text-lg font-normal mt-2">
+                      {selectedFile.name}
+                    </span>
+                  </p>
+                </div>
+              ) : (
+                <Button
+                  btnName="Remove banner"
+                  classStyles="mx-2 rounded-xl mt-10 w-full"
+                  handleClick={handleBannerSubmitRemove}
+                />
               )}
             </div>
           )}
           footer={selectedFile && (
             <Button
               btnName="Submit"
-              classStyles="mx-2 rounded-xl"
+              classStyles="mx-2 rounded-xl w-full"
               handleClick={handleBannerSubmit}
             />
           )}
@@ -436,22 +494,28 @@ const MyNFTs = () => {
                 )}
               </div>
               {/* Display the selected file */}
-              {selectedFile && (
-              <div className="p-4">
-                <p className="font-poppins dark:text-white text-nft-black-1 font-semibold text-lg">
-                  Selected File:  &nbsp;
-                  <span className="font-poppins dark:text-white text-nft-black-1 text-lg font-normal mt-2">
-                    {selectedFile.name}
-                  </span>
-                </p>
-              </div>
+              {selectedFile ? (
+                <div className="p-4">
+                  <p className="font-poppins dark:text-white text-nft-black-1 font-semibold text-lg">
+                    Selected File:  &nbsp;
+                    <span className="font-poppins dark:text-white text-nft-black-1 text-lg font-normal mt-2">
+                      {selectedFile.name}
+                    </span>
+                  </p>
+                </div>
+              ) : (
+                <Button
+                  btnName="Remove banner"
+                  classStyles="mx-2 rounded-xl mt-10 w-full"
+                  handleClick={handleProfileSubmitRemove}
+                />
               )}
             </div>
           )}
           footer={selectedFile && (
             <Button
               btnName="Submit"
-              classStyles="mx-2 rounded-xl"
+              classStyles="mx-2 rounded-xl w-full"
               handleClick={handleProfileSubmit}
             />
           )}
