@@ -9,7 +9,6 @@ import images from '../assets';
 // function that makes a random id
 import { makeId } from '../utils/makeId';
 import { getCreators, getBuyers, getSellersWithMostSales } from '../utils/getTopCreators';
-import { shortenAddress } from '../utils/shortenAddress';
 
 const Home = () => {
   // state to check when to show scroll buttons
@@ -198,7 +197,7 @@ const Home = () => {
                       key={`creator-${i}`}
                       rank={i + 1}
                       creatorImage={images[`creator${i + 1}`]}
-                      creatorName={shortenAddress(creator.sellerAddress)}
+                      creatorName={creator.sellerAddress}
                       creatorEths={creator.salesValue}
                     />
                   ))}
@@ -254,7 +253,7 @@ const Home = () => {
                       key={`creator-${i}`}
                       rank={i + 1}
                       creatorImage={images[`creator${10 - i}`]}
-                      creatorName={shortenAddress(creator.buyerAddress)}
+                      creatorName={creator.buyerAddress}
                       creatorEths={creator.total}
                       darkMode
                     />

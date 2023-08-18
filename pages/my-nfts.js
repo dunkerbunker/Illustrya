@@ -19,9 +19,12 @@ const MyNFTs = () => {
   const [isBannerModalOpen, setIsBannerModalOpen] = useState(false);
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
   const [selectedFile, setSelectedFile] = useState(null);
+  const [isNameEditing, setIsNameEditing] = useState(false);
+  const [editedNameValue, setEditedNameValue] = useState('');
 
   const [bannerImageBase64, setBannerImageBase64] = useState(null);
   const [profileImageBase64, setProfileImageBase64] = useState(null);
+  const [nickname, setNickname] = useState('');
 
   const { theme } = useTheme();
 
@@ -177,6 +180,44 @@ const MyNFTs = () => {
     window.location.reload();
   };
 
+  const handleNameEditClick = () => {
+    setEditedNameValue(nickname || shortenAddress(currentAccount));
+    setIsNameEditing(true);
+  };
+
+  const handleNameInputChange = (e) => {
+    setEditedNameValue(e.target.value);
+    // Call your API here with e.target.value
+  };
+
+  const handleNameInputBlur = async () => {
+    setIsNameEditing(false);
+    // Call your API here with editedValue
+    const formData = new FormData();
+    formData.append('nickname', editedNameValue);
+    try {
+      const response = await axios.put(`http://localhost:3000/users/${currentAccount}`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data', // Important header for file upload
+        },
+      });
+
+      if (response.status === 200) {
+        console.log('nickname successfully updated.');
+        // Close the modal and perform any other necessary actions
+        setIsBannerModalOpen(false);
+        setSelectedFile(null);
+      } else {
+        console.log('Error updating nickname.');
+      }
+    } catch (error) {
+      console.log('Error updating nickname', error);
+    }
+
+    // refresh the page
+    window.location.reload();
+  };
+
   const onDrop = (acceptedFiles) => {
     // Handle the dropped file (you can use the acceptedFiles array)
     setSelectedFile(acceptedFiles[0]);
@@ -228,6 +269,11 @@ const MyNFTs = () => {
           // const profileImg = btoa(new Uint8Array(userData.profileImage).reduce((data, byte) => data + String.fromCharCode(byte), ''));
 
           setProfileImageBase64(`data:${profileImageType};base64,${userData.profileImage}`);
+        }
+
+        // Update name if it exists
+        if (userData.nickname) {
+          setNickname(userData.nickname);
         }
       } catch (error) {
         console.log('Error fetching user data:', error);
@@ -354,10 +400,23 @@ const MyNFTs = () => {
             </div>
           </div>
 
-          <p className="font-poppins dark:text-white text-nft-black-1 font-semibold text-2xl mt-6">
-            {/* get shortened address of the current account */}
-            {shortenAddress(currentAccount)}
-          </p>
+          {isNameEditing ? (
+            <input
+              type="text"
+              value={editedNameValue}
+              onChange={handleNameInputChange}
+              onBlur={handleNameInputBlur}
+              className="font-poppins dark:text-white text-nft-black-1 font-semibold text-2xl mt-6 w-full p-2"
+            />
+          ) : (
+            <p
+              onClick={handleNameEditClick}
+              className="font-poppins dark:text-white text-nft-black-1 font-semibold text-2xl mt-6 cursor-pointer"
+            >
+              {/* get shortened address of the current account */}
+              {nickname || shortenAddress(currentAccount)}
+            </p>
+          )}
         </div>
       </div>
 

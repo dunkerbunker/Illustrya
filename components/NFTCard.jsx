@@ -10,6 +10,7 @@ const NFTCard = ({ nft }) => {
   const { nftCurrency, currentAccount } = useContext(NFTContext);
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   const [isLiked, setIsLiked] = useState(false);
+  const [nickname, setNickname] = useState('');
 
   const baseURL = 'http://localhost:3000';
   const walletAddress = currentAccount;
@@ -70,15 +71,30 @@ const NFTCard = ({ nft }) => {
     }
   };
 
+  const fetchUserData = async () => {
+    try {
+      const response = await axios.get(`http://localhost:3000/users/${nft.previousOwners[nft.previousOwners.length - 1]}`);
+      const userData = response.data;
+
+      // Update name if it exists
+      if (userData.nickname) {
+        setNickname(userData.nickname);
+      }
+    } catch (error) {
+      console.log('Error fetching user data:', error);
+    }
+  };
+
   useEffect(() => {
     // Initialize the NFT
     initializeNFT();
 
+    // Fetch user data
+    fetchUserData();
+
     const handleResize = () => {
       setWindowWidth(window.innerWidth);
     };
-
-    // console.log(nft);
 
     window.addEventListener('resize', handleResize);
 
@@ -111,7 +127,7 @@ const NFTCard = ({ nft }) => {
             </p>
 
             <p className="font-poppins dark:text-white text-nft-black-1 font-semibold text-sm mb-5">
-              by: {shortenAddress(nft.owner)}
+              By: {nickname || shortenAddress(nft.previousOwners[nft.previousOwners.length - 1])}
             </p>
 
             <hr className="dark:border-gray-700 mb-3 border-t-2" />

@@ -69,6 +69,9 @@ const NFTDetails = () => {
   const [successModal, setSuccessModal] = useState(false);
   const [activeTab, setActiveTab] = useState('details');
   const [likesCount, setLikesCount] = useState(0);
+  const [nickname, setNickname] = useState('');
+  const [profileImageBase64, setProfileImageBase64] = useState(null);
+
   const baseURL = 'http://localhost:3000';
 
   const initiateWalletIfConnected = async () => {
@@ -88,6 +91,29 @@ const NFTDetails = () => {
           console.log('Error creating user:', error);
         }
       }
+    }
+  };
+
+  const fetchUserData = async (nftOwner) => {
+    try {
+      console.log(nft);
+      const response = await axios.get(`http://localhost:3000/users/${nftOwner}`);
+      const userData = response.data;
+
+      // Update profile image if it exists
+      if (userData.profileImage) {
+        const { profileImageType } = userData; // Correctly extract the MIME type
+        // const profileImg = btoa(new Uint8Array(userData.profileImage).reduce((data, byte) => data + String.fromCharCode(byte), ''));
+
+        setProfileImageBase64(`data:${profileImageType};base64,${userData.profileImage}`);
+      }
+
+      // Update name if it exists
+      if (userData.nickname) {
+        setNickname(userData.nickname);
+      }
+    } catch (error) {
+      console.log('Error fetching user data:', error);
     }
   };
 
@@ -115,12 +141,9 @@ const NFTDetails = () => {
       setNft(router.query);
       setIsLoading(false);
       getLikes(nft.tokenId);
+      fetchUserData(router.query.previousOwners[router.query.previousOwners.length - 1]);
     }
   }, [router.isReady]);
-
-  // useEffect(() => {
-  //   console.log('nft', nft);
-  // }, [nft]);
 
   const checkout = async () => {
     await buyNFT(nft);
@@ -233,7 +256,6 @@ const NFTDetails = () => {
                   <p className="text-center">No ownership history available.</p>
                 )}
               </div>
-
             )}
           </div>
         </div>
@@ -243,14 +265,25 @@ const NFTDetails = () => {
           <div className="flex flex-row sm:flex-col justify-between mt-3 ml-4">
             <div className="flex items-center">
               <div className="relative w-24 h-24 minlg:w-40 minlg:h-40 mr-4">
-                <Image
-                  src={images.creator1}
-                  objectFit="cover"
-                  className="rounded-full"
-                />
+                {profileImageBase64 ? (
+                  <img
+                    src={profileImageBase64}
+                    alt="Creator"
+                    className="object-cover rounded-full"
+                  />
+                ) : (
+                  <Image
+                    src={images.creator1}
+                    objectFit="cover"
+                    className="rounded-full"
+                  />
+                )}
               </div>
               <p className="font-poppins dark:text-white text-nft-black-1 text-xl minlg:text-lg font-semibold">
-                {shortenAddress(nft.owner)}
+                {nickname
+                  ? `${nickname} (${shortenAddress(nft.previousOwners[nft.previousOwners.length - 1])})`
+                  : shortenAddress(nft.previousOwners[nft.previousOwners.length - 1])}
+
               </p>
             </div>
             <div className="flex flex-row sm:flex-col w-72 h-12 md:w-full mt-6 ml-9 sm:mt-0 sm:ml-0">

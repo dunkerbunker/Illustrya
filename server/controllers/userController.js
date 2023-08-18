@@ -49,7 +49,7 @@ exports.getAllUsers = async (req, res) => {
 exports.getUser = async (req, res) => {
   const { walletAddress } = req.params;
   try {
-    const user = await User.findOne({ walletAddress });
+    const user = await User.findOne({ walletAddress: { $regex: new RegExp(`^${walletAddress}$`, 'i') } });
     if (!user) {
       return res.status(404).json({ error: 'User not found' });
     }
