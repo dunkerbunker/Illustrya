@@ -17,9 +17,11 @@ const MyNFTs = () => {
   const [activeSelect, setActiveSelect] = useState('Recently Added');
 
   const [isBannerModalOpen, setIsBannerModalOpen] = useState(false);
+  const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
   const [selectedFile, setSelectedFile] = useState(null);
 
   const [bannerImageBase64, setBannerImageBase64] = useState(null);
+  const [profileImageBase64, setProfileImageBase64] = useState(null);
 
   const { theme } = useTheme();
 
@@ -83,6 +85,46 @@ const MyNFTs = () => {
     window.location.reload();
   };
 
+  const handleProfileOpenModal = () => {
+    setIsProfileModalOpen(true);
+  };
+
+  const handleProfileCloseModal = () => {
+    setIsProfileModalOpen(false);
+  };
+
+  const handleProfileSubmit = async () => {
+    if (!selectedFile) {
+      console.log('No file selected.');
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append('profileImage', selectedFile);
+
+    try {
+      const response = await axios.put(`http://localhost:3000/users/${currentAccount}`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data', // Important header for file upload
+        },
+      });
+
+      if (response.status === 200) {
+        console.log('Profile image updated successfully.');
+        // Close the modal and perform any other necessary actions
+        setIsBannerModalOpen(false);
+        setSelectedFile(null);
+      } else {
+        console.log('Error updating banner image.');
+      }
+    } catch (error) {
+      console.log('Error updating banner image:', error);
+    }
+
+    // refresh the page
+    window.location.reload();
+  };
+
   const onDrop = (acceptedFiles) => {
     // Handle the dropped file (you can use the acceptedFiles array)
     setSelectedFile(acceptedFiles[0]);
@@ -127,7 +169,14 @@ const MyNFTs = () => {
 
           setBannerImageBase64(`data:${bannerImageType};base64,${userData.bannerImage}`);
         }
-        console.log('User data:', userData);
+
+        // Update profile image if it exists
+        if (userData.profileImage) {
+          const { profileImageType } = userData; // Correctly extract the MIME type
+          // const profileImg = btoa(new Uint8Array(userData.profileImage).reduce((data, byte) => data + String.fromCharCode(byte), ''));
+
+          setProfileImageBase64(`data:${profileImageType};base64,${userData.profileImage}`);
+        }
       } catch (error) {
         console.log('Error fetching user data:', error);
       }
@@ -136,9 +185,9 @@ const MyNFTs = () => {
     fetchUserData();
   }, [currentAccount]);
 
-  useEffect(() => {
-    console.log('Banner image base64:', bannerImageBase64);
-  }, [bannerImageBase64]);
+  // useEffect(() => {
+  //   console.log('Banner image base64:', bannerImageBase64);
+  // }, [bannerImageBase64]);
 
   useEffect(() => {
     const sortedNfts = [...nfts];
@@ -203,7 +252,7 @@ const MyNFTs = () => {
         )}
         <div className="absolute top-10 right-2 p-2 pt-10 z-1">
           <button
-            className="w-10 h-10 white-bg rounded-full flex items-center justify-center"
+            className="w-10 h-10 bg-nft-black-1 rounded-full flex items-center justify-center"
             type="button"
             onClick={handleBannerOpenModal}
           >
@@ -218,21 +267,41 @@ const MyNFTs = () => {
           </button>
         </div>
         <div className="flexCenter flex-col -mt-20 z-0">
-          <div className="flexCenter w-40 h-40 sm:w-36 sm:h-36 p-1 bg-nft-black-2 rounded-full">
-            <Image
-              src={images.creator1}
-              className="rounded-full object-cover"
-              objectFit="cover"
-            />
+          <div className="relative">
+            <div className="flex justify-center items-end">
+              <div className="flexCenter w-40 h-40 sm:w-36 sm:h-36 p-1 bg-nft-black-2 rounded-full relative">
+                {profileImageBase64 ? (
+                  <img
+                    src={profileImageBase64}
+                    className="rounded-full object-cover"
+                  />
+                ) : (
+                  <Image
+                    src={images.creator1}
+                    className="rounded-full object-cover"
+                    objectFit="cover"
+                  />
+                )}
+                <div className="absolute bottom-0 right-0 mr-2">
+                  <button
+                    className="w-10 h-10 bg-nft-black-1 rounded-full flex items-center justify-center"
+                    type="button"
+                    onClick={handleProfileOpenModal}
+                  >
+                    {/* Edit icon for light mode */}
+                    <Image
+                      src={images.editLight}
+                      width={28}
+                      height={28}
+                      objectFit="contain"
+                      alt="Edit Icon"
+                    />
+                  </button>
+                </div>
+              </div>
+            </div>
           </div>
-          <div className="bottom-0 right-0 mb-1 mr-1">
-            <Image
-              src={images.editLight}
-              alt="Edit"
-              width={35}
-              height={35}
-            />
-          </div>
+
           <p className="font-poppins dark:text-white text-nft-black-1 font-semibold text-2xl mt-6">
             {/* get shortened address of the current account */}
             {shortenAddress(currentAccount)}
@@ -274,8 +343,8 @@ const MyNFTs = () => {
                 {selectedFile ? (
                   <img
                     src={URL.createObjectURL(selectedFile)}
-                    width={700}
-                    height={200}
+                    width={100}
+                    height={100}
                     alt="selected-file"
                     className={theme === 'light' ? 'filter invert' : ''}
                   />
@@ -324,6 +393,69 @@ const MyNFTs = () => {
             />
           )}
           handleClose={handleBannerCloseModal}
+        />
+      )}
+
+      {isProfileModalOpen && (
+        <Modal
+          header="Update your profile!"
+          body={(
+            <div>
+              <div {...getRootProps()} className={fileStyle}>
+                <input {...getInputProps()} />
+                {selectedFile ? (
+                  <img
+                    src={URL.createObjectURL(selectedFile)}
+                    width={100}
+                    height={100}
+                    alt="selected-file"
+                    className={theme === 'light' ? 'filter invert' : ''}
+                  />
+                ) : (
+                  <div className="flexCenter flex-col text-center">
+                    <p className="font-poppins dark:text-white text-nft-black-1 font-semibold text-lg">
+                      PNG, GIF, SVG, WEBM. Max 5MB.
+                    </p>
+                    <div className="my-12 w-full flex justify-center">
+                      <Image
+                        src={images.upload}
+                        width={100}
+                        height={100}
+                        objectFit="contain"
+                        alt="file-upload"
+                        className={theme === 'light' ? 'filter invert' : ''}
+                      />
+                    </div>
+                    <p className="font-poppins dark:text-white text-nft-black-1 font-semibold text-sm">
+                      Drag and Drop File
+                    </p>
+                    <p className="font-poppins dark:text-white text-nft-black-1 font-semibold text-sm mt-2">
+                      or Browser media on your device
+                    </p>
+                  </div>
+                )}
+              </div>
+              {/* Display the selected file */}
+              {selectedFile && (
+              <div className="p-4">
+                <p className="font-poppins dark:text-white text-nft-black-1 font-semibold text-lg">
+                  Selected File:  &nbsp;
+                  <span className="font-poppins dark:text-white text-nft-black-1 text-lg font-normal mt-2">
+                    {selectedFile.name}
+                  </span>
+                </p>
+              </div>
+              )}
+            </div>
+          )}
+          footer={selectedFile && (
+            <Button
+              btnName="Submit"
+              classStyles="mx-2 rounded-xl"
+              handleClick={handleProfileSubmit}
+            />
+          )}
+          handleClose={handleProfileCloseModal}
         />
       )}
     </div>
