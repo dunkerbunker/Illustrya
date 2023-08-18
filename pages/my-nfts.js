@@ -48,6 +48,35 @@ const MyNFTs = () => {
     setIsBannerModalOpen(false);
   };
 
+  const handleBannerSubmit = async () => {
+    if (!selectedFile) {
+      console.log('No file selected.');
+      return;
+    }
+
+    // Create a FormData object to send the file
+    // const formData = new FormData();
+    // formData.append('bannerImage', 'benas');
+
+    try {
+      // Call the API to update the banner image
+      const response = await axios.put(`http://localhost:3000/users/${currentAccount}`, {
+        bannerImage: 'beans',
+      });
+
+      if (response.status === 200) {
+        console.log('Banner image updated successfully.');
+        // Close the modal and perform any other necessary actions
+        setIsBannerModalOpen(false);
+        setSelectedFile(null);
+      } else {
+        console.log('Error updating banner image.');
+      }
+    } catch (error) {
+      console.log('Error updating banner image:', error);
+    }
+  };
+
   const onDrop = (acceptedFiles) => {
     // Handle the dropped file (you can use the acceptedFiles array)
     setSelectedFile(acceptedFiles[0]);
@@ -254,9 +283,7 @@ const MyNFTs = () => {
             <Button
               btnName="Submit"
               classStyles="mx-2 rounded-xl"
-              handleClick={() => {
-
-              }}
+              handleClick={handleBannerSubmit}
             />
           )}
           handleClose={handleBannerCloseModal}
