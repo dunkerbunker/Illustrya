@@ -4,8 +4,10 @@ const userSchema = new mongoose.Schema({
   walletAddress: { type: String, required: true },
   nickname: { type: String },
   bio: { type: String },
-  bannerImage: { type: String }, // Store image URLs here
-  profileImage: { type: String },
+  bannerImage: { type: Buffer }, // Store image data here
+  bannerImageType: { type: String }, // Store image mime type here
+  profileImage: { type: Buffer },
+  profileImageType: { type: String },
 });
 
 const User = mongoose.model('User', userSchema);

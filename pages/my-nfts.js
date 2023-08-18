@@ -18,13 +18,16 @@ const MyNFTs = () => {
 
   const [isBannerModalOpen, setIsBannerModalOpen] = useState(false);
   const [selectedFile, setSelectedFile] = useState(null);
+
+  const [bannerImageBase64, setBannerImageBase64] = useState(null);
+
   const { theme } = useTheme();
 
   const initiateWalletIfConnected = async () => {
     if (currentAccount) {
       try {
         // Call the "Get User by Wallet Address" API
-        console.log(currentAccount);
+        // console.log(currentAccount);
         await axios.get(`http://localhost:3000/users/${currentAccount}`);
       } catch (error) {
         // console.log('Error getting user:', error);
@@ -32,9 +35,9 @@ const MyNFTs = () => {
           await axios.post('http://localhost:3000/users', {
             walletAddress: currentAccount,
           });
-          console.log('User created successfully.');
+          // console.log('User created successfully.');
         } catch (error2) {
-          console.log('Error creating user:', error);
+          // console.log('Error creating user:', error);
         }
       }
     }
@@ -54,14 +57,14 @@ const MyNFTs = () => {
       return;
     }
 
-    // Create a FormData object to send the file
-    // const formData = new FormData();
-    // formData.append('bannerImage', 'benas');
+    const formData = new FormData();
+    formData.append('bannerImage', selectedFile);
 
     try {
-      // Call the API to update the banner image
-      const response = await axios.put(`http://localhost:3000/users/${currentAccount}`, {
-        bannerImage: 'beans',
+      const response = await axios.put(`http://localhost:3000/users/${currentAccount}`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data', // Important header for file upload
+        },
       });
 
       if (response.status === 200) {
@@ -75,6 +78,9 @@ const MyNFTs = () => {
     } catch (error) {
       console.log('Error updating banner image:', error);
     }
+
+    // refresh the page
+    window.location.reload();
   };
 
   const onDrop = (acceptedFiles) => {
@@ -107,7 +113,32 @@ const MyNFTs = () => {
 
   useEffect(() => {
     initiateWalletIfConnected();
+
+    // Fetch user data by wallet address
+    const fetchUserData = async () => {
+      try {
+        const response = await axios.get(`http://localhost:3000/users/${currentAccount}`);
+        const userData = response.data;
+
+        // Update banner image if it exists
+        if (userData.bannerImage) {
+          const { bannerImageType } = userData; // Correctly extract the MIME type
+          // const bannerImg = btoa(new Uint8Array(userData.bannerImage).reduce((data, byte) => data + String.fromCharCode(byte), ''));
+
+          setBannerImageBase64(`data:${bannerImageType};base64,${userData.bannerImage}`);
+        }
+        console.log('User data:', userData);
+      } catch (error) {
+        console.log('Error fetching user data:', error);
+      }
+    };
+
+    fetchUserData();
   }, [currentAccount]);
+
+  useEffect(() => {
+    console.log('Banner image base64:', bannerImageBase64);
+  }, [bannerImageBase64]);
 
   useEffect(() => {
     const sortedNfts = [...nfts];
@@ -159,11 +190,17 @@ const MyNFTs = () => {
   return (
     <div className="w-full flex justify-start items-center flex-col min-h-screen">
       <div className="w-full flexCenter flex-col">
-        <Banner
-          name="Your Nifty NFTs"
-          childStyles="text-center mb-4 relative"
-          parentStyles="h-80 justify-center relative"
-        />
+        {bannerImageBase64 ? (
+          <Banner
+            imageSrc={bannerImageBase64}
+          />
+        ) : (
+          <Banner
+            name="Your Arty Art"
+            childStyles="text-center mb-4 relative"
+            parentStyles="h-80 justify-center relative"
+          />
+        )}
         <div className="absolute top-10 right-2 p-2 pt-10 z-1">
           <button
             className="w-10 h-10 white-bg rounded-full flex items-center justify-center"
@@ -237,8 +274,8 @@ const MyNFTs = () => {
                 {selectedFile ? (
                   <img
                     src={URL.createObjectURL(selectedFile)}
-                    width={1000}
-                    height={300}
+                    width={700}
+                    height={200}
                     alt="selected-file"
                     className={theme === 'light' ? 'filter invert' : ''}
                   />

@@ -1,11 +1,13 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
+const fileUpload = require('express-fileupload');
 
 const app = express();
 // allow cross-origin requests
 app.use(cors());
 app.use(express.json());
+app.use(fileUpload());
 
 // Connect to MongoDB
 const MONGO_URI = 'mongodb://localhost:27017/nftdb';
@@ -16,8 +18,6 @@ db.on('error', console.error.bind(console, 'MongoDB connection error:'));
 db.once('open', () => {
   console.log('Connected to MongoDB');
 });
-
-app.use(express.json());
 
 // Routes
 const combinedRoutes = require('./routes/routes');
