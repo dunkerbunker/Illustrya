@@ -74,13 +74,18 @@ exports.modifyUser = async (req, res) => {
   const { walletAddress } = req.params;
   const { nickname, bio } = req.body;
   try {
-    const user = await User.findOne({ walletAddress });
+    const user = await User.findOne({ walletAddress: { $regex: new RegExp(`^${walletAddress}$`, 'i') } });
     if (!user) {
       return res.status(404).json({ error: 'User not found' });
     }
 
-    user.nickname = nickname;
-    user.bio = bio;
+    if (nickname) {
+      user.nickname = nickname;
+    }
+
+    if (bio) {
+      user.bio = bio;
+    }
 
     // console.log(req);
 

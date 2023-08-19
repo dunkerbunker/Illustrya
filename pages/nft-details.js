@@ -282,7 +282,7 @@ const NFTDetails = () => {
               <p className="font-poppins dark:text-white text-nft-black-1 text-xl minlg:text-lg font-semibold">
                 {nickname
                   ? `${nickname} (${shortenAddress(nft.previousOwners[nft.previousOwners.length - 1])})`
-                  : shortenAddress(nft.previousOwners[nft.previousOwners.length - 1])}
+                  : shortenAddress(nft.seller)}
 
               </p>
             </div>

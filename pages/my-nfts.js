@@ -13,6 +13,8 @@ const MyNFTs = () => {
   const { fetchMyNFTsOrListedNFTs, currentAccount } = useContext(NFTContext);
   const [nfts, setNfts] = useState([]);
   const [nftsCopy, setNftsCopy] = useState([]);
+  // const [listedNfts, setListedNfts] = useState([]);
+  // const [listedNftsCopy, setListedNftsCopy] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [activeSelect, setActiveSelect] = useState('Recently Added');
 
@@ -21,10 +23,14 @@ const MyNFTs = () => {
   const [selectedFile, setSelectedFile] = useState(null);
   const [isNameEditing, setIsNameEditing] = useState(false);
   const [editedNameValue, setEditedNameValue] = useState('');
+  // description
+  const [isDescriptionEditing, setIsDescriptionEditing] = useState(false);
+  const [editedDescriptionValue, setEditedDescriptionValue] = useState('');
 
   const [bannerImageBase64, setBannerImageBase64] = useState(null);
   const [profileImageBase64, setProfileImageBase64] = useState(null);
   const [nickname, setNickname] = useState('');
+  const [description, setDescription] = useState('');
 
   const { theme } = useTheme();
 
@@ -195,6 +201,7 @@ const MyNFTs = () => {
     // Call your API here with editedValue
     const formData = new FormData();
     formData.append('nickname', editedNameValue);
+    console.log(editedNameValue);
     try {
       const response = await axios.put(`http://localhost:3000/users/${currentAccount}`, formData, {
         headers: {
@@ -212,6 +219,44 @@ const MyNFTs = () => {
       }
     } catch (error) {
       console.log('Error updating nickname', error);
+    }
+
+    // refresh the page
+    window.location.reload();
+  };
+
+  const handleDescriptionEditClick = () => {
+    setEditedDescriptionValue(description || 'No description');
+    setIsDescriptionEditing(true);
+  };
+
+  const handleDescriptionInputChange = (e) => {
+    setEditedDescriptionValue(e.target.value);
+    // Call your API here with e.target.value
+  };
+
+  const handleDescriptionInputBlur = async () => {
+    setIsDescriptionEditing(false);
+    // Call your API here with editedValue
+    const formData = new FormData();
+    formData.append('bio', editedDescriptionValue);
+    try {
+      const response = await axios.put(`http://localhost:3000/users/${currentAccount}`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data', // Important header for file upload
+        },
+      });
+
+      if (response.status === 200) {
+        console.log('description successfully updated.');
+        // Close the modal and perform any other necessary actions
+        setIsBannerModalOpen(false);
+        setSelectedFile(null);
+      } else {
+        console.log('Error updating description.');
+      }
+    } catch (error) {
+      console.log('Error updating description', error);
     }
 
     // refresh the page
@@ -244,6 +289,13 @@ const MyNFTs = () => {
         setNftsCopy(items);
         setIsLoading(false);
       });
+    fetchMyNFTsOrListedNFTs('fetchItemsListed')
+      .then((items) => {
+        // append listed nfts to the nfts array
+        setNfts((prevNfts) => [...prevNfts, ...items]);
+        // append listed nfts to the nftsCopy array
+        setNftsCopy((prevNfts) => [...prevNfts, ...items]);
+      });
   }, []);
 
   useEffect(() => {
@@ -275,6 +327,11 @@ const MyNFTs = () => {
         if (userData.nickname) {
           setNickname(userData.nickname);
         }
+
+        // Update description if it exists
+        if (userData.bio) {
+          setDescription(userData.bio);
+        }
       } catch (error) {
         console.log('Error fetching user data:', error);
       }
@@ -282,10 +339,6 @@ const MyNFTs = () => {
 
     fetchUserData();
   }, [currentAccount]);
-
-  // useEffect(() => {
-  //   console.log('Banner image base64:', bannerImageBase64);
-  // }, [bannerImageBase64]);
 
   useEffect(() => {
     const sortedNfts = [...nfts];
@@ -406,17 +459,35 @@ const MyNFTs = () => {
               value={editedNameValue}
               onChange={handleNameInputChange}
               onBlur={handleNameInputBlur}
-              className="font-poppins dark:text-white text-nft-black-1 font-semibold text-2xl mt-6 w-full p-2"
+              className="font-poppins dark:text-white text-nft-black-1 font-bold text-3xl mt-5 w-full p-2"
             />
           ) : (
             <p
               onClick={handleNameEditClick}
-              className="font-poppins dark:text-white text-nft-black-1 font-semibold text-2xl mt-6 cursor-pointer"
+              className="font-poppins dark:text-white text-nft-black-1 font-bold text-3xl mt-5 cursor-pointer"
             >
               {/* get shortened address of the current account */}
               {nickname || shortenAddress(currentAccount)}
             </p>
           )}
+
+          <p className="font-poppins dark:text-white text-nft-black-1 font-thin text-xl mt-6">
+            {isDescriptionEditing ? (
+              <input
+                type="text"
+                value={editedDescriptionValue}
+                onChange={handleDescriptionInputChange}
+                onBlur={handleDescriptionInputBlur}
+                className="font-poppins dark:text-white text-nft-black-1 font-thin text-lg mt-6 w-full p-2"
+                style={{ width: '100%', maxWidth: '800px' }}
+              />
+            ) : (
+              <span onClick={handleDescriptionEditClick} className="cursor-pointer">
+                {description || 'Add a description'}
+              </span>
+            )}
+          </p>
+
         </div>
       </div>
 
