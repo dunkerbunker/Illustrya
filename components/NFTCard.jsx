@@ -6,7 +6,7 @@ import { NFTContext } from '../context/NFTContext';
 import images from '../assets';
 import { shortenAddress } from '../utils/shortenAddress';
 
-const NFTCard = ({ nft }) => {
+const NFTCard = ({ nft }, isProfile) => {
   const { nftCurrency, currentAccount } = useContext(NFTContext);
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   const [isLiked, setIsLiked] = useState(false);
@@ -106,7 +106,9 @@ const NFTCard = ({ nft }) => {
 
   return (
     <Link href={{ pathname: '/nft-details', query: nft }}>
-      <div className="flex flex-row items-stretch bg-white dark:bg-nft-black-3 rounded-3xl m-4 shadow-md mx-auto max-w-4xl h-100 ml-6 lg:ml-1">
+      <div className={`flex flex-row items-stretch bg-white dark:bg-nft-black-3 rounded-3xl m-4 shadow-md mx-auto h-100 lg:ml-1 ${isProfile ? 'w-full' : 'max-w-4xl'}`}>
+
+        {/* <div className="flex flex-row items-stretch bg-white dark:bg-nft-black-3 rounded-3xl m-4 shadow-md mx-auto max-w-4xl h-100 ml-6 lg:ml-1"> */}
 
         {/* Image section */}
         <div style={{ width: '25vh', height: '30vh' }} className="relative rounded-l-3xl overflow-hidden nftCardResponsive">  {/* <-- Set a fixed width and height using inline styles */}
@@ -186,7 +188,7 @@ const NFTCard = ({ nft }) => {
                   <Image
                     src={images.leftArrow}
                     width={30}
-                    height={13}
+                    height={25}
                     objectFit="contain"
                     alt="arrow"
                   />

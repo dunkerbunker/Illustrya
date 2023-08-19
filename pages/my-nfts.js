@@ -13,6 +13,8 @@ const MyNFTs = () => {
   const { fetchMyNFTsOrListedNFTs, currentAccount } = useContext(NFTContext);
   const [nfts, setNfts] = useState([]);
   const [nftsCopy, setNftsCopy] = useState([]);
+  const [listedNfts, setListedNfts] = useState([]);
+  const [ownedNfts, setOwnedNfts] = useState([]);
   // const [listedNfts, setListedNfts] = useState([]);
   // const [listedNftsCopy, setListedNftsCopy] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -23,6 +25,8 @@ const MyNFTs = () => {
   const [selectedFile, setSelectedFile] = useState(null);
   const [isNameEditing, setIsNameEditing] = useState(false);
   const [editedNameValue, setEditedNameValue] = useState('');
+  const [isListedActive, setListedActive] = useState(true);
+  const [isOwnedActive, setOwnedActive] = useState(true);
   // description
   const [isDescriptionEditing, setIsDescriptionEditing] = useState(false);
   const [editedDescriptionValue, setEditedDescriptionValue] = useState('');
@@ -33,6 +37,20 @@ const MyNFTs = () => {
   const [description, setDescription] = useState('');
 
   const { theme } = useTheme();
+
+  const handleListedButtonClick = () => {
+    setListedActive(!isListedActive); // Toggle the Listed button state
+    if (!isOwnedActive) {
+      setOwnedActive(true); // Ensure at least one button is active
+    }
+  };
+
+  const handleOwnedButtonClick = () => {
+    setOwnedActive(!isOwnedActive); // Toggle the Owned button state
+    if (!isListedActive) {
+      setListedActive(true); // Ensure at least one button is active
+    }
+  };
 
   const initiateWalletIfConnected = async () => {
     if (currentAccount) {
@@ -280,23 +298,30 @@ const MyNFTs = () => {
     ${isDragReject ? 'border-file-reject ' : ''}`;
 
   useEffect(() => {
-    // fetch the nfts from the context
-    fetchMyNFTsOrListedNFTs()
-      .then((items) => {
-        // get nfts from conext and stop loading animation
-        setNfts(items);
-        // set a copy of the nfts for search
-        setNftsCopy(items);
+    // Fetch both sets of NFTs
+    Promise.all([
+      fetchMyNFTsOrListedNFTs(),
+      fetchMyNFTsOrListedNFTs('fetchItemsListed'),
+    ])
+      .then(([ownedNFTs, listedNFTs]) => {
+        setNfts([...ownedNFTs, ...listedNFTs]);
+        setNftsCopy([...ownedNFTs, ...listedNFTs]);
+        setListedNfts(listedNFTs);
+        setOwnedNfts(ownedNFTs);
         setIsLoading(false);
       });
-    fetchMyNFTsOrListedNFTs('fetchItemsListed')
-      .then((items) => {
-        // append listed nfts to the nfts array
-        setNfts((prevNfts) => [...prevNfts, ...items]);
-        // append listed nfts to the nftsCopy array
-        setNftsCopy((prevNfts) => [...prevNfts, ...items]);
-      });
   }, []);
+
+  useEffect(() => {
+    if (isListedActive && isOwnedActive) {
+      setNfts(nftsCopy); // Show all NFTs
+    } else if (isListedActive) {
+      setNfts(listedNfts); // Only show listed NFTs
+    } else if (isOwnedActive) {
+      setNfts(ownedNfts); // Only show owned NFTs
+    }
+    // console.log('nfts', nfts);
+  }, [isListedActive, isOwnedActive]);
 
   useEffect(() => {
     initiateWalletIfConnected();
@@ -342,16 +367,18 @@ const MyNFTs = () => {
 
   useEffect(() => {
     const sortedNfts = [...nfts];
-
     switch (activeSelect) {
       case 'Price (low to high)':
         setNfts(sortedNfts.sort((a, b) => a.price - b.price));
+        // console.log('sortedNfts', sortedNfts);
         break;
       case 'Price (high to low)':
         setNfts(sortedNfts.sort((a, b) => b.price - a.price));
+        // console.log('sortedNfts', sortedNfts);
         break;
       case 'Recently added':
         setNfts(sortedNfts.sort((a, b) => b.tokenId - a.tokenId));
+        // console.log('sortedNfts', sortedNfts);
         break;
       default:
         setNfts(nfts);
@@ -488,6 +515,23 @@ const MyNFTs = () => {
             )}
           </p>
 
+          <div className="flex mt-10">
+            <button
+              type="button"
+              className={`${isListedActive ? 'nft-gradient' : 'nft-bg-black-2'} text-sm minlg:text-lg py-2 px-6 minlg:px-8 font-poppins font-semibold text-white mx-2 rounded-xl`}
+              onClick={handleListedButtonClick}
+            >
+              Listed Artworks
+            </button>
+            <button
+              type="button"
+              className={`${isOwnedActive ? 'nft-gradient' : 'nft-bg-black-2'} text-sm minlg:text-lg py-2 px-6 minlg:px-8 font-poppins font-semibold text-white mx-2 rounded-xl`}
+              onClick={handleOwnedButtonClick}
+            >
+              Owned Artworks
+            </button>
+          </div>
+
         </div>
       </div>
 
@@ -510,7 +554,7 @@ const MyNFTs = () => {
             />
           </div>
           <div className="mt-3 w-full flex flex-wrap">
-            {nfts.map((nft) => <NFTCard key={nft.tokenId} nft={nft} onProfilePage />)}
+            {nfts.map((nft) => <NFTCard key={nft.tokenId} nft={nft} isProfile />)}
           </div>
         </div>
       )}
