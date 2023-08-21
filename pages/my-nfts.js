@@ -216,20 +216,21 @@ const MyNFTs = () => {
 
   const handleNameInputBlur = async () => {
     setIsNameEditing(false);
-    // Call your API here with editedValue
+
     const formData = new FormData();
     formData.append('nickname', editedNameValue);
-    console.log(editedNameValue);
+
     try {
       const response = await axios.put(`http://localhost:3000/users/${currentAccount}`, formData, {
         headers: {
-          'Content-Type': 'multipart/form-data', // Important header for file upload
+          'Content-Type': 'multipart/form-data',
         },
       });
 
       if (response.status === 200) {
-        console.log('nickname successfully updated.');
-        // Close the modal and perform any other necessary actions
+        console.log('Nickname successfully updated.');
+        // Update the name in your component's state
+        setNickname(editedNameValue);
         setIsBannerModalOpen(false);
         setSelectedFile(null);
       } else {
@@ -238,9 +239,6 @@ const MyNFTs = () => {
     } catch (error) {
       console.log('Error updating nickname', error);
     }
-
-    // refresh the page
-    window.location.reload();
   };
 
   const handleDescriptionEditClick = () => {
@@ -255,19 +253,21 @@ const MyNFTs = () => {
 
   const handleDescriptionInputBlur = async () => {
     setIsDescriptionEditing(false);
-    // Call your API here with editedValue
+
     const formData = new FormData();
     formData.append('bio', editedDescriptionValue);
+
     try {
       const response = await axios.put(`http://localhost:3000/users/${currentAccount}`, formData, {
         headers: {
-          'Content-Type': 'multipart/form-data', // Important header for file upload
+          'Content-Type': 'multipart/form-data',
         },
       });
 
       if (response.status === 200) {
-        console.log('description successfully updated.');
-        // Close the modal and perform any other necessary actions
+        console.log('Description successfully updated.');
+        // Update the description in your component's state
+        setDescription(editedDescriptionValue);
         setIsBannerModalOpen(false);
         setSelectedFile(null);
       } else {
@@ -276,9 +276,6 @@ const MyNFTs = () => {
     } catch (error) {
       console.log('Error updating description', error);
     }
-
-    // refresh the page
-    window.location.reload();
   };
 
   const onDrop = (acceptedFiles) => {
@@ -486,7 +483,7 @@ const MyNFTs = () => {
               value={editedNameValue}
               onChange={handleNameInputChange}
               onBlur={handleNameInputBlur}
-              className="font-poppins dark:text-white text-nft-black-1 font-bold text-3xl mt-5 w-full p-2"
+              className="font-poppins dark:text-white text-nft-black-1 font-bold text-3xl mt-5 w-2xl p-2 text-center"
             />
           ) : (
             <p
@@ -498,20 +495,22 @@ const MyNFTs = () => {
             </p>
           )}
 
-          <p className="font-poppins dark:text-white text-nft-black-1 font-thin text-xl mt-6">
+          <p className="font-poppins dark:text-white text-nft-black-1 font-light text-xl mt-6 text-center w-full">
             {isDescriptionEditing ? (
               <input
                 type="text"
                 value={editedDescriptionValue}
                 onChange={handleDescriptionInputChange}
                 onBlur={handleDescriptionInputBlur}
-                className="font-poppins dark:text-white text-nft-black-1 font-thin text-lg mt-6 w-full p-2"
+                className="font-poppins dark:text-white text-nft-black-1 font-light text-lg p-2 h-full resize-y"
                 style={{ width: '100%', maxWidth: '800px' }}
               />
+
             ) : (
-              <span onClick={handleDescriptionEditClick} className="cursor-pointer">
-                {description || 'Add a description'}
+              <span onClick={handleDescriptionEditClick} className="cursor-pointer text-center" style={{ textAlign: 'center', display: 'block', margin: '0 auto' }}>
+                {description && description.length > 128 ? `${description.slice(0, 128)}...` : description || 'Add a description'}
               </span>
+
             )}
           </p>
 
@@ -538,9 +537,15 @@ const MyNFTs = () => {
       {!isLoading && !nfts.length && !nftsCopy.length ? (
         // if there are no nfts, show a message
         <div className="flexCenter sm:p-4 p-16">
-          <h1 className="font-poppins dark:text-white text-nft-black-1 font-extrabold text-3xl">
-            No NFTs Owned
-          </h1>
+          {currentAccount ? (
+            <h1 className="font-poppins dark:text-white text-nft-black-1 font-extrabold text-3xl">
+              No NFTs Owned
+            </h1>
+          ) : (
+            <h1 className="font-poppins dark:text-white text-nft-black-1 font-extrabold text-3xl">
+              Connect Wallet to view your profile
+            </h1>
+          )}
         </div>
       ) : (
         // if there are nfts, show this

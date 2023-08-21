@@ -296,7 +296,7 @@ const Home = () => {
           {/* !isLoading && !nfts.length */}
           {!isLoading && !nfts.length ? (
             <h1 className="mt-10 font-poppins dark:text-white text-nft-black-1 text-2xl minlf:text-4xl font-semibold ml-4 xs:ml-0">
-              That&pos;s weird... No Artworks found. Please try again later.
+              Thats weird... No Artworks found. Please try again later.
             </h1>
           ) : isLoading ? (
             <Loader />
