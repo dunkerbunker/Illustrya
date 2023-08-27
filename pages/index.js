@@ -40,7 +40,7 @@ const Home = () => {
         setNftsCopy(items);
         setIsLoading(false);
       });
-    // console.log(nfts);
+    console.log(nfts);
 
     // fetch the sold nfts from the context
     fetchSoldNFTs()

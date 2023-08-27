@@ -175,6 +175,77 @@ export const NFTProvider = ({ children }) => {
     return items;
   };
 
+  const fetchNFTsOwned = async (user, type) => {
+    setIsLoadingNFT(false);
+
+    const provider = new ethers.providers.JsonRpcProvider();
+    const contract = fetchContract(provider);
+    const data = await contract.fetchAllMarketItems();
+    // fetch all NFTs simultaneously
+    // map to get data from each NFT
+    const items = await Promise.all(
+      data.map(async ({ tokenId, isAvailableForPurchase, seller, owner, buyer, price: unformattedPrice }) => {
+        const tokenURI = await contract.tokenURI(tokenId);
+        // get the metadata from the NFT url
+        const { data: { image, name, description } } = await axios.get(tokenURI);
+        // need to convert from number to Wei or Gwei
+        const price = ethers.utils.formatUnits(unformattedPrice.toString(), 'ether');
+
+        const [previousOwners, salesHistory] = await contract.getTokenHistory(tokenId);
+        // Convert sale prices from wei to ether
+        const previousSalePrices = salesHistory.map((pricex) => ethers.utils.formatUnits(pricex.toString(), 'ether'));
+
+        // Check if the user is the seller or the last value in previousOwners
+        const isUserSeller = seller === user;
+        const isUserLastOwner = previousOwners[previousOwners.length - 1] === user;
+
+        // Only return NFTs where the user is the seller or the last owner
+        if (isUserSeller && type === 'listed') {
+          return {
+            price,
+            tokenid: tokenId.toNumber(),
+            seller,
+            isAvailableForPurchase,
+            owner,
+            buyer,
+            previousOwners,
+            previousSalePrices,
+            image,
+            name,
+            description,
+            tokenURI,
+            isUserSeller,
+            isUserLastOwner,
+          };
+        }
+
+        if (isUserLastOwner && type === 'owned' && !isUserSeller) {
+          return {
+            price,
+            tokenid: tokenId.toNumber(),
+            seller,
+            isAvailableForPurchase,
+            owner,
+            buyer,
+            previousOwners,
+            previousSalePrices,
+            image,
+            name,
+            description,
+            tokenURI,
+            isUserSeller,
+            isUserLastOwner,
+          };
+        }
+        return null; // Return null for NFTs that don't meet the criteria
+      }),
+    );
+    // Filter out null values (NFTs that don't meet the criteria)
+    const filteredItems = items.filter((item) => item !== null);
+
+    return filteredItems;
+  };
+
   const fetchSoldNFTs = async () => {
     setIsLoadingNFT(false);
 
@@ -292,6 +363,7 @@ export const NFTProvider = ({ children }) => {
         buyNFT,
         createSale,
         fetchSoldNFTs,
+        fetchNFTsOwned,
         isLoadingNFT }}
     >
       {children}

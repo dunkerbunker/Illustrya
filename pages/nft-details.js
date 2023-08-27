@@ -2,6 +2,7 @@ import { useState, useEffect, useContext } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
 import axios from 'axios';
+import Link from 'next/link';
 import { NFTContext } from '../context/NFTContext';
 import { Loader, Button, Modal } from '../components';
 import images from '../assets';
@@ -265,19 +266,21 @@ const NFTDetails = () => {
           <div className="flex flex-row sm:flex-col justify-between mt-3 ml-4">
             <div className="flex items-center">
               <div className="relative w-24 h-24 minlg:w-40 minlg:h-40 mr-4">
-                {profileImageBase64 ? (
-                  <img
-                    src={profileImageBase64}
-                    alt="Creator"
-                    className="object-cover rounded-full"
-                  />
-                ) : (
-                  <Image
-                    src={images.creator1}
-                    objectFit="cover"
-                    className="rounded-full"
-                  />
-                )}
+                <Link href={`/profile/${nft.seller}`}>
+                  {profileImageBase64 ? (
+                    <img
+                      src={profileImageBase64}
+                      alt="Creator"
+                      className="object-cover rounded-full"
+                    />
+                  ) : (
+                    <Image
+                      src={images.creator1}
+                      objectFit="cover"
+                      className="rounded-full"
+                    />
+                  )}
+                </Link>
               </div>
               <p className="font-poppins dark:text-white text-nft-black-1 text-xl minlg:text-lg font-semibold">
                 {nickname
