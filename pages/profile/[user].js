@@ -30,6 +30,8 @@ const Profile = () => {
   const [profileImageBase64, setProfileImageBase64] = useState(null);
   const [nickname, setNickname] = useState('');
   const [description, setDescription] = useState('');
+  const [followersCount, setFollowersCount] = useState(0);
+  const [isFollowing, setIsFollowing] = useState(true);
 
   const handleListedButtonClick = () => {
     setListedActive(!isListedActive); // Toggle the Listed button state
@@ -127,6 +129,27 @@ const Profile = () => {
         if (userData.bio) {
           setDescription(userData.bio);
         }
+
+        // Update followers count if it exists
+        if (userData.followersCount) {
+          setFollowersCount(userData.followersCount);
+        }
+
+        if (userData.followers) {
+          console.log(userData.followers);
+          if (userData.followers.includes(currentAccount)) {
+            setIsFollowing(true);
+          }
+          if (!userData.followers.includes(currentAccount)) {
+            setIsFollowing(false);
+          }
+        }
+
+        // if (userData.followers) {
+        //   setIsFollowing(userData.followers.includes(currentAccount));
+        // }
+
+        // console.log(userData);
       } catch (error) {
         console.log('Error fetching user data:', error);
       }
@@ -155,6 +178,42 @@ const Profile = () => {
         break;
     }
   }, [activeSelect]);
+
+  const onFollowClick = async () => {
+    const formData = new FormData();
+    formData.append('userToFollowWallet', currentAccount);
+
+    // http://localhost:your-port/users/:walletAddress/follow
+    try {
+      await axios.post(`http://localhost:3000/users/${user}/follow`, formData, {
+        headers: {
+          Accept: 'application/json',
+        },
+      });
+      setIsFollowing(true);
+      setFollowersCount(followersCount + 1);
+    } catch (error) {
+      console.log('Error following user:', error);
+    }
+  };
+
+  const onUnfollowClick = async () => {
+    const formData = new FormData();
+    formData.append('userToUnfollowWallet', currentAccount);
+
+    // http://localhost:your-port/users/:walletAddress/unfollow
+    try {
+      await axios.post(`http://localhost:3000/users/${user}/unfollow`, formData, {
+        headers: {
+          Accept: 'application/json',
+        },
+      });
+      setIsFollowing(false);
+      setFollowersCount(followersCount - 1);
+    } catch (error) {
+      console.log('Error unfollowing user:', error);
+    }
+  };
 
   // load until the nfts are fetched
   if (isLoading) {
@@ -198,6 +257,31 @@ const Profile = () => {
             parentStyles="h-80 justify-center relative"
           />
         )}
+        <div className="flex absolute right-0 mr-5 mt-32 visible md:hidden">
+          <div className="bg-nft-black-1 text-white font-poppins font-bold text-lg px-3 py-1 rounded-3xl">
+            {followersCount} followers
+          </div>
+
+          {isFollowing ? (
+            <button
+              className="ml-5 bg-nft-black-1 cursor-pointer text-white font-poppins font-bold text-lg px-5 py-1 rounded-3xl"
+              onClick={onUnfollowClick}
+              type="button"
+            >
+              Following
+            </button>
+
+          ) : (
+            <button
+              className="ml-5 nft-gradient cursor-pointer text-white font-poppins font-bold text-lg px-8 py-1 rounded-3xl"
+              type="button"
+              onClick={onFollowClick}
+            >
+              Follow
+            </button>
+
+          )}
+        </div>
         <div className="flexCenter flex-col -mt-20 z-0">
           <div className="relative">
             <div className="flex justify-center items-end">
@@ -217,11 +301,36 @@ const Profile = () => {
               </div>
             </div>
           </div>
-
           <p className="font-poppins dark:text-white text-nft-black-1 font-bold text-3xl mt-5">
             {/* get shortened address of the current account */}
             {nickname || shortenAddress(user)}
           </p>
+
+          <div className="flex mt-6 custom-hide-on-above-md">
+            <div className="bg-nft-black-1 text-white font-poppins font-bold text-lg px-3 py-1 rounded-3xl">
+              {followersCount} followers
+            </div>
+
+            {isFollowing ? (
+              <button
+                className="ml-5 bg-nft-black-1 cursor-pointer text-white font-poppins font-bold text-lg px-5 py-1 rounded-3xl"
+                onClick={onUnfollowClick}
+                type="button"
+              >
+                Following
+              </button>
+
+            ) : (
+              <button
+                className="ml-5 nft-gradient cursor-pointer text-white font-poppins font-bold text-lg px-8 py-1 rounded-3xl"
+                type="button"
+                onClick={onFollowClick}
+              >
+                Follow
+              </button>
+
+            )}
+          </div>
 
           <p className="font-poppins dark:text-white text-nft-black-1 font-light text-xl mt-6 text-center w-full">
             <span className="text-center" style={{ textAlign: 'center', display: 'block', margin: '0 auto' }}>

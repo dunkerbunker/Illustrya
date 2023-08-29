@@ -138,6 +138,12 @@
     overflow: hidden;
 }
 
+.custom-hide-on-above-md {
+    @media (min-width: 987px) {
+        display: none;
+    }
+}
+
 @keyframes fadeIn {
     from {
         opacity: 0;

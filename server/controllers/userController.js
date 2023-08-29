@@ -62,6 +62,8 @@ exports.getUser = async (req, res) => {
       bio: user.bio,
       bannerImage: user.bannerImage ? user.bannerImage.toString('base64') : null,
       profileImage: user.profileImage ? user.profileImage.toString('base64') : null,
+      followersCount: user.followersCount,
+      followers: user.followers,
     });
   } catch (error) {
     console.error('Error getting user:', error);
@@ -143,6 +145,68 @@ exports.deleteUser = async (req, res) => {
     res.json({ message: 'User deleted successfully' });
   } catch (error) {
     console.error('Error deleting user:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+};
+
+// Function to follow a user
+exports.followUser = async (req, res) => {
+  // nft.owner
+  const { walletAddress } = req.params;
+  // current account
+  const { userToFollowWallet } = req.body;
+
+  try {
+    const user = await User.findOne({ walletAddress: { $regex: new RegExp(`^${walletAddress}$`, 'i') } });
+
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    // Check if the user is already following the target user
+    if (user.followers.includes(userToFollowWallet)) {
+      return res.status(400).json({ error: 'You are already following this user' });
+    }
+
+    // Add the user's wallet address to the followers list and update followers count
+    user.followers.push(userToFollowWallet);
+    user.followersCount += 1;
+
+    await user.save();
+
+    res.json({ message: 'User followed successfully' });
+  } catch (error) {
+    console.error('Error following user:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+};
+
+// Function to unfollow a user
+exports.unfollowUser = async (req, res) => {
+  const { walletAddress } = req.params;
+  const { userToUnfollowWallet } = req.body;
+
+  try {
+    const user = await User.findOne({ walletAddress: { $regex: new RegExp(`^${walletAddress}$`, 'i') } });
+
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    // Check if the user is following the target user
+    if (!user.followers.includes(userToUnfollowWallet)) {
+      return res.status(400).json({ error: 'You are not following this user' });
+    }
+
+    // Remove the user's wallet address from the followers list and update followers count
+    user.followers = user.followers.filter((followerWallet) => followerWallet !== userToUnfollowWallet);
+    user.followersCount -= 1;
+
+    await user.save();
+
+    res.json({ message: 'User unfollowed successfully' });
+  } catch (error) {
+    console.error('Error unfollowing user:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 };

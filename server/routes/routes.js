@@ -17,5 +17,7 @@ router.get('/users/:walletAddress', userController.getUser);
 router.post('/users', userController.createUser);
 router.put('/users/:walletAddress', userController.modifyUser);
 router.delete('/users/:walletAddress', userController.deleteUser);
+router.post('/users/:walletAddress/follow', userController.followUser);
+router.post('/users/:walletAddress/unfollow', userController.unfollowUser);
 
 module.exports = router;

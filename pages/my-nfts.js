@@ -31,6 +31,8 @@ const MyNFTs = () => {
   const [isDescriptionEditing, setIsDescriptionEditing] = useState(false);
   const [editedDescriptionValue, setEditedDescriptionValue] = useState('');
 
+  const [followersCount, setFollowersCount] = useState(0);
+
   const [bannerImageBase64, setBannerImageBase64] = useState(null);
   const [profileImageBase64, setProfileImageBase64] = useState(null);
   const [nickname, setNickname] = useState('');
@@ -354,6 +356,13 @@ const MyNFTs = () => {
         if (userData.bio) {
           setDescription(userData.bio);
         }
+
+        // Update followers count if it exists
+        if (userData.followersCount) {
+          setFollowersCount(userData.followersCount);
+        }
+
+        console.log(userData);
       } catch (error) {
         console.log('Error fetching user data:', error);
       }
@@ -425,6 +434,15 @@ const MyNFTs = () => {
             parentStyles="h-80 justify-center relative"
           />
         )}
+        <div className="flex absolute right-0 mr-5 mt-32 visible md:hidden">
+          <div className="bg-nft-black-1 text-white font-poppins font-bold text-lg px-3 py-1 rounded-3xl">
+            {followersCount} followers
+          </div>
+
+          <div className="ml-5 bg-nft-black-1 text-white font-poppins font-bold text-lg px-3 py-1 rounded-3xl">
+            Impress your followers!
+          </div>
+        </div>
         <div className="absolute top-10 right-2 p-2 pt-10 z-1">
           <button
             className="w-10 h-10 bg-nft-black-1 rounded-full flex items-center justify-center"
@@ -476,25 +494,34 @@ const MyNFTs = () => {
               </div>
             </div>
           </div>
+          <div className="flex justify-center">
+            {isNameEditing ? (
+              <input
+                type="text"
+                value={editedNameValue}
+                onChange={handleNameInputChange}
+                onBlur={handleNameInputBlur}
+                className="font-poppins dark:text-white text-nft-black-1 font-bold text-3xl mt-5 w-2xl p-2 text-center"
+              />
+            ) : (
+              <p
+                onClick={handleNameEditClick}
+                className="font-poppins dark:text-white text-nft-black-1 font-bold text-3xl mt-5 cursor-pointer"
+              >
+                {/* get shortened address of the current account */}
+                {nickname || shortenAddress(currentAccount)}
+              </p>
+            )}
+          </div>
+          <div className="flex mt-6 custom-hide-on-above-md">
+            <div className="bg-nft-black-1 text-white font-poppins font-bold text-lg px-3 py-1 rounded-3xl">
+              {followersCount} followers
+            </div>
 
-          {isNameEditing ? (
-            <input
-              type="text"
-              value={editedNameValue}
-              onChange={handleNameInputChange}
-              onBlur={handleNameInputBlur}
-              className="font-poppins dark:text-white text-nft-black-1 font-bold text-3xl mt-5 w-2xl p-2 text-center"
-            />
-          ) : (
-            <p
-              onClick={handleNameEditClick}
-              className="font-poppins dark:text-white text-nft-black-1 font-bold text-3xl mt-5 cursor-pointer"
-            >
-              {/* get shortened address of the current account */}
-              {nickname || shortenAddress(currentAccount)}
-            </p>
-          )}
-
+            <div className="ml-5 bg-nft-black-1 text-white font-poppins font-bold text-lg px-3 py-1 rounded-3xl">
+              Enjoy! 😀 😁
+            </div>
+          </div>
           <p className="font-poppins dark:text-white text-nft-black-1 font-light text-xl mt-6 text-center w-full">
             {isDescriptionEditing ? (
               <input

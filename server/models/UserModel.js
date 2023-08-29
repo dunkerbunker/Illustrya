@@ -8,6 +8,8 @@ const userSchema = new mongoose.Schema({
   bannerImageType: { type: String }, // Store image mime type here
   profileImage: { type: Buffer },
   profileImageType: { type: String },
+  followers: [{ type: String }], // Array of wallet addresses of followers
+  followersCount: { type: Number, default: 0 }, // Number of followers
 });
 
 const User = mongoose.model('User', userSchema);
