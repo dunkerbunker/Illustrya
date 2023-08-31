@@ -6,7 +6,7 @@ import { NFTContext } from '../context/NFTContext';
 import images from '../assets';
 import { Button, Loader } from '../components';
 
-const ResellNFT = () => {
+const Resell = () => {
   const { createSale, isLoadingNFT, nftCurrency, currentAccount } = useContext(NFTContext);
   const router = useRouter();
   const { tokenId, tokenURI } = router.query;
@@ -134,7 +134,7 @@ const ResellNFT = () => {
           <p className="font-poppins dark:text-white text-nft-black-1 font-semibold text-xl pl-3">{nftCurrency}</p>
         </div>
         <Button
-          btnName="Re-Sell NFT"
+          btnName="Re-Sell Artwork"
           classStyles="rounded-xl ml-4 mt-4 sm:mt-0"
           handleClick={resell}
         />
@@ -144,4 +144,4 @@ const ResellNFT = () => {
   );
 };
 
-export default ResellNFT;
+export default Resell;

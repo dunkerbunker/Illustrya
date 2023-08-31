@@ -4,7 +4,7 @@ import axios from 'axios';
 import { NFTContext } from '../context/NFTContext';
 import { NFTCard, Loader } from '../components';
 
-const ListedNFTs = () => {
+const ForYou = () => {
   const { fetchMyNFTsOrListedNFTs, currentAccount } = useContext(NFTContext);
   const [nfts, setNfts] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -58,7 +58,7 @@ const ListedNFTs = () => {
     return (
       <div className="flexCenter sm:p-4 p-16 min-h-screen">
         <h1 className="font-poppins dark:text-white text-nft-black-1 text-3xl font-extrabold">
-          No NFTs Listed for Sale
+          No Art Listed for Sale
         </h1>
       </div>
     );
@@ -81,4 +81,4 @@ const ListedNFTs = () => {
   );
 };
 
-export default ListedNFTs;
+export default ForYou;

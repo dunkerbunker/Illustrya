@@ -105,7 +105,7 @@ const NFTCard = ({ nft }, isProfile) => {
   }, []);
 
   return (
-    <Link href={{ pathname: '/nft-details', query: nft }}>
+    <Link href={{ pathname: '/artwork', query: nft }}>
       <div className={`flex flex-row items-stretch bg-white dark:bg-nft-black-3 rounded-3xl m-4 shadow-md mx-auto h-100 lg:ml-1 ${isProfile ? 'w-full' : 'max-w-4xl'}`}>
 
         {/* <div className="flex flex-row items-stretch bg-white dark:bg-nft-black-3 rounded-3xl m-4 shadow-md mx-auto max-w-4xl h-100 ml-6 lg:ml-1"> */}

@@ -9,7 +9,7 @@ import { NFTCard, Loader, Banner, SearchBar, Modal, Button } from '../components
 import images from '../assets';
 import { shortenAddress } from '../utils/shortenAddress';
 
-const MyNFTs = () => {
+const Profile = () => {
   const { fetchMyNFTsOrListedNFTs, currentAccount } = useContext(NFTContext);
   const [nfts, setNfts] = useState([]);
   const [nftsCopy, setNftsCopy] = useState([]);
@@ -732,4 +732,4 @@ const MyNFTs = () => {
   );
 };
 
-export default MyNFTs;
+export default Profile;

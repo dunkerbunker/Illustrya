@@ -298,7 +298,7 @@ const NFTDetails = () => {
                 <button
                   type="button"
                   className="nft-gradient minlg:text-lg py-2 px-4 minlg:px-6 font-poppins font-semibold text-white sm:mt-9 sm:mb-5 rounded-xl text-base w-full sm:w-auto"
-                  onClick={() => router.push(`/resell-nft?tokenId=${nft.tokenid}&tokenURI=${nft.tokenURI}`)}
+                  onClick={() => router.push(`/resell?tokenId=${nft.tokenid}&tokenURI=${nft.tokenURI}`)}
                 >
                   List on Marketplace
                 </button>
