@@ -390,7 +390,7 @@ const NFTDetails = () => {
               <Button
                 btnName="Check it out"
                 classStyles="sm:mb-5 sm:mr-0 rounded-xl"
-                handleClick={() => router.push('/my-nfts')}
+                handleClick={() => router.push('/profile')}
               />
             </div>
           )}
