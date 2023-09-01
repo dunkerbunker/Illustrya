@@ -3,17 +3,16 @@ import axios from 'axios';
 
 import { NFTContext } from '../context/NFTContext';
 import { NFTCard, Loader } from '../components';
+// import { fetchNFTsByRecommendation } from '../utils/getRecommendedPosts';
 
 const ForYou = () => {
-  const { fetchMyNFTsOrListedNFTs, currentAccount } = useContext(NFTContext);
+  const { fetchNFTs, currentAccount } = useContext(NFTContext);
   const [nfts, setNfts] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
   const initiateWalletIfConnected = async () => {
     if (currentAccount) {
       try {
-        // Call the "Get User by Wallet Address" API
-        console.log(currentAccount);
         await axios.get(`http://localhost:3000/users/${currentAccount}`);
       } catch (error) {
         // console.log('Error getting user:', error);
@@ -26,23 +25,52 @@ const ForYou = () => {
           console.log('Error creating user:', error);
         }
       }
+
+      try {
+        // Get the followers of CurrentAccount
+        console.log('CurrentAccount', currentAccount);
+
+        const response = await axios.get(`http://localhost:3000/users/${currentAccount}`);
+
+        console.log('data', response);
+
+        // Check if the 'followers' property exists in the response data
+        if (!response.data || !response.data.followers) {
+          console.error('Followers data not found in the response.');
+          setNfts([]);
+        }
+
+        const { followers } = response.data;
+
+        const items = await fetchNFTs();
+
+        // Filter NFTs created or being sold by followed users
+        const filteredNFTs = items.filter((nft) => {
+          // Check if the seller is in the list of followers
+          const sellerIsFollowed = followers.includes(nft.seller.toLowerCase());
+
+          // Check if the last previous owner is in the list of followers
+          const lastOwnerIsFollowed = nft.previousOwners.length > 0 && followers.includes(nft.previousOwners[nft.previousOwners.length - 1].toLowerCase());
+
+          // Keep the NFT if either the seller or last owner is followed
+          return sellerIsFollowed || lastOwnerIsFollowed;
+        });
+
+        console.log('hi');
+
+        setNfts(filteredNFTs);
+      } catch (error) {
+        console.error('Error fetching NFTs:', error);
+        // return an empty array if there's an error
+        setNfts([]);
+      }
     }
   };
 
   useEffect(() => {
     initiateWalletIfConnected();
+    setIsLoading(false);
   }, [currentAccount]);
-
-  useEffect(() => {
-    // fetch the nfts from the context
-    fetchMyNFTsOrListedNFTs('fetchItemsListed')
-      .then((items) => {
-        // console.log(items);
-        // get nfts from conext and stop loading animation
-        setNfts(items);
-        setIsLoading(false);
-      });
-  }, []);
 
   // load until the nfts are fetched
   if (isLoading) {

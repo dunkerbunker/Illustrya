@@ -7,8 +7,7 @@ import { NFTContext } from '../context/NFTContext';
 import { Banner, CreatorCard, Loader, NFTCard, SearchBar } from '../components';
 import images from '../assets';
 // function that makes a random id
-import { makeId } from '../utils/makeId';
-import { getCreators, getBuyers, getSellersWithMostSales } from '../utils/getTopCreators';
+import { getBuyers, getSellersWithMostSales } from '../utils/getTopCreators';
 
 const Home = () => {
   // state to check when to show scroll buttons

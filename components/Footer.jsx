@@ -2,6 +2,7 @@
 import Image from 'next/image';
 import { useTheme } from 'next-themes';
 
+import Link from 'next/link';
 import images from '../assets';
 import { Button } from '.';
 
@@ -11,7 +12,12 @@ const FooterLinks = ({ heading, items }) => (
     <h3 className="font-poppins dark:text-white text-nft-black-1 font-semibold text-xl mb-10">{heading}</h3>
     {/* loop through all items passed in to display under heading */}
     {items.map((item, i) => (
-      <p key={i} className="font-poppins dark:text-white text-nft-black-1 font-normal test-base cursor-pointer dark:hover:text-nft-gray-1 hover:text-nft-black-1 my-3">{item}</p>
+      <Link
+        href={item === 'Explore' ? ('/') : (item.toLowerCase().replace(' ', '-'))}
+        key={i}
+      >
+        <p key={i} className="font-poppins dark:text-white text-nft-black-1 font-normal test-base cursor-pointer dark:hover:text-nft-gray-1 hover:text-nft-black-1 my-3">{item}</p>
+      </Link>
     ))}
   </div>
 );
@@ -53,7 +59,7 @@ const Footer = () => {
 
         <div className="flex-1 flexBetweenStart flex-wrap ml-10 md:ml-0 md:mt-8">
           {/* use of footerLinks component made in the same file */}
-          <FooterLinks heading="Illustrya" items={['Explore', 'How it Works', 'Contact Us']} />
+          <FooterLinks heading="Illustrya" items={['Explore', 'White Paper', 'Contact Us']} />
           <FooterLinks heading="Support" items={['Help center', 'Terms of service', 'Legal', 'Privacy policy']} />
         </div>
       </div>

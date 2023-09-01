@@ -43,6 +43,8 @@ import redHeart from './red-heart.png';
 import whiteHeartDark from './white-heart-dark.png';
 import editLight from './editLight.png';
 import editDark from './editDark.png';
+import email from './email.png';
+import mobile from './mobile.png';
 
 export default {
   heartOutline,
@@ -90,4 +92,6 @@ export default {
   whiteHeartDark,
   editLight,
   editDark,
+  email,
+  mobile,
 };
