@@ -10,6 +10,8 @@ const userSchema = new mongoose.Schema({
   profileImageType: { type: String },
   followers: [{ type: String }], // Array of wallet addresses of followers
   followersCount: { type: Number, default: 0 }, // Number of followers
+  following: [{ type: String }], // Array of wallet addresses of following
+  followingCount: { type: Number, default: 0 }, // Number of following
 });
 
 const User = mongoose.model('User', userSchema);

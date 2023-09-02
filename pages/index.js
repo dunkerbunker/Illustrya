@@ -314,7 +314,7 @@ const Home = () => {
                   />
                 </div>
               </div>
-              <div className="mt-9 w-full grid grid-cols-2 lg:grid-cols-1 gap-7">
+              <div className="mt-9 w-full grid grid-cols-2 md:grid-cols-1 gap-7">
                 {nfts?.map((nft) => (
                   <div key={nft.tokenId}>
                     <NFTCard nft={nft} />

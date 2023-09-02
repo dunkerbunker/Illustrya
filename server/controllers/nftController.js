@@ -14,7 +14,6 @@ exports.createNFT = async (tokenID) => {
 
 // Function to get all NFTs
 exports.getAllNFTs = async (req, res) => {
-  console.log('Received GET request to /nfts');
   try {
     const nfts = await NFT.find();
     res.json(nfts);

@@ -15,12 +15,20 @@ const NFTCard = ({ nft }, isProfile) => {
   const baseURL = 'http://localhost:3000';
   const walletAddress = currentAccount;
 
+  if (isProfile) {
+    console.log('true');
+  } else {
+    console.log('false');
+  }
+
   const initializeNFT = async () => {
     try {
       const token = nft.tokenid;
-      const response = await axios.get(`${baseURL}/nfts/?`, { params: { token } });
+      // console.log('token', token);
+      const response = await axios.get(`${baseURL}/nfts/${token}`);
       // Check if currentAccount is in the likedBy list
-      if (response.data[0].likedBy.includes(currentAccount)) {
+      // console.log(response.data);
+      if (response.data.likedBy.includes(currentAccount)) {
         setIsLiked(true);
       } else {
         setIsLiked(false);

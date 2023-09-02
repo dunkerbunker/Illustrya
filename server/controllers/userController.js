@@ -64,6 +64,8 @@ exports.getUser = async (req, res) => {
       profileImage: user.profileImage ? user.profileImage.toString('base64') : null,
       followersCount: user.followersCount,
       followers: user.followers,
+      followingCount: user.followingCount,
+      following: user.following,
     });
   } catch (error) {
     console.error('Error getting user:', error);
@@ -158,6 +160,7 @@ exports.followUser = async (req, res) => {
 
   try {
     const user = await User.findOne({ walletAddress: { $regex: new RegExp(`^${walletAddress}$`, 'i') } });
+    const userToFollow = await User.findOne({ walletAddress: { $regex: new RegExp(`^${userToFollowWallet}$`, 'i') } });
 
     if (!user) {
       return res.status(404).json({ error: 'User not found' });
@@ -171,8 +174,14 @@ exports.followUser = async (req, res) => {
     // Add the user's wallet address to the followers list and update followers count
     user.followers.push(userToFollowWallet);
     user.followersCount += 1;
+    user.followingCount += 1;
+
+    // Add the target user's wallet address to the following list and update following count
+    userToFollow.following.push(walletAddress);
+    userToFollow.followingCount += 1;
 
     await user.save();
+    await userToFollow.save();
 
     res.json({ message: 'User followed successfully' });
   } catch (error) {
@@ -188,6 +197,7 @@ exports.unfollowUser = async (req, res) => {
 
   try {
     const user = await User.findOne({ walletAddress: { $regex: new RegExp(`^${walletAddress}$`, 'i') } });
+    const userToUnfollow = await User.findOne({ walletAddress: { $regex: new RegExp(`^${userToUnfollowWallet}$`, 'i') } });
 
     if (!user) {
       return res.status(404).json({ error: 'User not found' });
@@ -202,7 +212,12 @@ exports.unfollowUser = async (req, res) => {
     user.followers = user.followers.filter((followerWallet) => followerWallet !== userToUnfollowWallet);
     user.followersCount -= 1;
 
+    // Remove the target user's wallet address from the following list and update following count
+    userToUnfollow.following = userToUnfollow.following.filter((followingWallet) => followingWallet !== walletAddress);
+    userToUnfollow.followingCount -= 1;
+
     await user.save();
+    await userToUnfollow.save();
 
     res.json({ message: 'User unfollowed successfully' });
   } catch (error) {
