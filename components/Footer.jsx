@@ -60,7 +60,7 @@ const Footer = () => {
         <div className="flex-1 flexBetweenStart flex-wrap ml-10 md:ml-0 md:mt-8">
           {/* use of footerLinks component made in the same file */}
           <FooterLinks heading="Illustrya" items={['Explore', 'White Paper', 'Contact Us']} />
-          <FooterLinks heading="Support" items={['Help center', 'Terms of service', 'Legal', 'Privacy policy']} />
+          <FooterLinks heading="Support" items={['Help center', 'Legal', 'Privacy policy']} />
         </div>
       </div>
 

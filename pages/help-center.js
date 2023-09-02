@@ -4,16 +4,35 @@ const FAQSection = () => {
   // Define the FAQ data as an array of objects
   const faqs = [
     {
-      question: 'How long does it take to deliver the first blog post?',
+      question: 'How can I pay for an artwork?',
       answer:
-        'It takes 2-3 weeks to get your first blog post ready. This includes in-depth research and the creation of your monthly content marketing strategy before writing your first blog post.',
+        'You can pay for an artwork using your ETH. We use MetaMask as a wallet and the blockchain to process all payments. It is a secure, trusted payment method that allows you to buy and sell artworks with anyone in the world.',
     },
-    // Add more FAQ items here as needed
+    {
+      question: 'Is the blockchain safe?',
+      answer:
+        'Yes, the blockchain is considered safe and secure. It employs advanced cryptographic techniques to protect data and transactions. Transactions are immutable and transparent, making it difficult for unauthorized parties to tamper with the data. However, its essential to follow best security practices and use reputable wallets and platforms.',
+    },
+    {
+      question: 'Can I sell my art?',
+      answer:
+        'Absolutely! You can sell your art on our platform. We provide a marketplace for artists to showcase and sell their work. Simply create an account, list your art pieces, set prices, and start selling to a global audience of art enthusiasts.',
+    },
+    {
+      question: 'Do I need a referral?',
+      answer:
+        'No, you do not need a referral to use our platform. You can sign up and use our services without needing a referral from someone else. Our platform is open to all users who meet our terms and conditions.',
+    },
+    {
+      question: 'Are there any upfront costs?',
+      answer:
+        'There are no upfront costs to use our platform. You can join and list your art for sale without any initial fees. We operate on a commission-based model, where we take a percentage of the sale price when you successfully sell your art. You only pay when you make a sale.',
+    },
   ];
 
   // Use the useState hook to manage the open/closed state of each FAQ
   const [openFAQs, setOpenFAQs] = useState(
-    faqs.map((faq, index) => (index === 0)),
+    faqs.map(() => false),
   );
 
   // Function to toggle the open/closed state of a FAQ item
@@ -42,84 +61,51 @@ const FAQSection = () => {
           </div>
 
           <div className="flex-1 mt-8 lg:mx-12 lg:mt-0">
-            <div>
-              <button
-                className="flex items-center focus:outline-none"
-                type="button"
-              >
-                <svg className="flex-shrink-0 w-6 h-6 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M20 12H4" /></svg>
+            {faqs.map((faq, index) => (
+              <div key={index}>
+                <button
+                  className="flex items-center focus:outline-none"
+                  type="button"
+                  onClick={() => toggleFAQ(index)}
+                >
+                  {openFAQs[index] ? ( // Check if the FAQ is open
+                    <svg
+                      className="flex-shrink-0 w-6 h-6 text-blue-500"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                    </svg>
+                  ) : (
+                    <svg
+                      className="flex-shrink-0 w-6 h-6 text-gray-500"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M20 12H4" />
+                    </svg>
+                  )}
 
-                <h2 className="mx-4 text-xl text-gray-700 dark:text-white">How can I pay for an artwork?</h2>
-              </button>
+                  <h2 className="mx-4 text-xl text-gray-700 dark:text-white">{faq.question}</h2>
+                </button>
 
-              <div className="flex mt-8 md:mx-10">
-                <span className="border border-blue-500" />
+                {openFAQs[index] && (
+                  <div className="flex mt-8 md:mx-10">
+                    <span className="border border-blue-500" />
 
-                <p className="max-w-3xl px-4 text-gray-500 dark:text-gray-300">
-                  You can pay for an artwork using your ETH. We use MetaMask as a wallet and the blockchain to process all payments. It is a secure, trusted payment method that allows you to buy and sell artworks with anyone in the world.
-                </p>
+                    <p className="max-w-3xl px-4 text-gray-500 dark:text-gray-300">
+                      {faq.answer}
+                    </p>
+                  </div>
+                )}
+
+                <hr className="my-8 border-gray-200 dark:border-gray-700" />
               </div>
-            </div>
-
-            <hr className="my-8 border-gray-200 dark:border-gray-700" />
-
-            <div>
-              <button
-                className="flex items-center focus:outline-none"
-                type="button"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" className="flex-shrink-0 w-6 h-6 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4" />
-                </svg>
-
-                <h2 className="mx-4 text-xl text-gray-700 dark:text-white">Is the blockchain safe?</h2>
-              </button>
-            </div>
-
-            <hr className="my-8 border-gray-200 dark:border-gray-700" />
-
-            <div>
-              <button
-                className="flex items-center focus:outline-none"
-                type="button"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" className="flex-shrink-0 w-6 h-6 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4" />
-                </svg>
-
-                <h2 className="mx-4 text-xl text-gray-700 dark:text-white">Can I sell my art?</h2>
-              </button>
-            </div>
-
-            <hr className="my-8 border-gray-200 dark:border-gray-700" />
-
-            <div>
-              <button
-                className="flex items-center focus:outline-none"
-                type="button"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" className="flex-shrink-0 w-6 h-6 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4" />
-                </svg>
-
-                <h2 className="mx-4 text-xl text-gray-700 dark:text-white">Do I need a referral?</h2>
-              </button>
-            </div>
-
-            <hr className="my-8 border-gray-200 dark:border-gray-700" />
-
-            <div>
-              <button
-                className="flex items-center focus:outline-none"
-                type="button"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" className="flex-shrink-0 w-6 h-6 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4" />
-                </svg>
-
-                <h2 className="mx-4 text-xl text-gray-700 dark:text-white">Is there any upfront costs?</h2>
-              </button>
-            </div>
+            ))}
           </div>
         </div>
       </div>
