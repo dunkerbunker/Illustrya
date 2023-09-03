@@ -15,7 +15,6 @@ const ForYou = () => {
   const [followingUsersNames, setFollowingUsersNames] = useState([]); // ['user1', 'user2'
   const [followingUsersImages, setFollowingUsersImages] = useState([]); // ['user1', 'user2'
   const [isLoading, setIsLoading] = useState(true);
-
   const initiateWalletIfConnected = async () => {
     if (currentAccount) {
       try {
@@ -149,7 +148,7 @@ const ForYou = () => {
     return (
       <div className="flexCenter sm:p-4 p-16 min-h-screen">
         <h1 className="font-poppins dark:text-white text-nft-black-1 text-3xl font-extrabold">
-          No Art Listed for Sale
+          Nothing to see here!
         </h1>
       </div>
     );
@@ -161,35 +160,38 @@ const ForYou = () => {
         <h2 className="font-poppins dark:text-white text-nft-black-1 text-4xl font-semibold mt-2 ml-4 sm:ml-2">
           People you follow
         </h2>
-        <div className="mt-12 mb-12 flex">
-          {followingUsers.map((user, index) => (
-            <div
-              key={index} // Make sure to use a unique key for each item in the list
-              className="mr-4 flexCenter w-40 h-40 sm:w-36 sm:h-36 p-1 bg-nft-black-2 rounded-full relative"
-            >
-              {followingUsersImages[index] ? (
-                <img
-                  src={followingUsersImages[index]}
-                  className="rounded-full object-cover"
-                />
-              ) : (
-                <Image
-                  src={images.creator1}
-                  className="rounded-full object-cover"
-                  objectFit="cover"
-                />
-              )}
+        <div className="mt-12 mb-12 flex overflow-x-auto relative">
+          <div className="flex">
+            {followingUsers.map((user, index) => (
+              <div
+                key={index}
+                className="mr-4 mb-10 flexCenter w-32 h-32 p-1 bg-nft-black-2 rounded-full relative"
+              >
+                {followingUsersImages[index] ? (
+                  <img
+                    src={followingUsersImages[index]}
+                    className="rounded-full object-cover"
+                  />
+                ) : (
+                  <Image
+                    src={images.creator1}
+                    className="rounded-full"
+                    objectFit="cover"
+                  />
+                )}
 
-              <h1 className="absolute top-36 pt-1 pb-1 left-0 right-0 text-center font-poppins text-white font-semibold text-sm bg-nft-black-2 rounded-lg">
-                {followingUsersNames[index] || shortenAddress(user)}
-              </h1>
-            </div>
-          ))}
+                <h1 className="absolute top-28 pt-1 pb-1 left-0 right-0 text-center font-poppins text-white font-semibold text-sm bg-nft-black-2 rounded-lg">
+                  {followingUsersNames[index] || shortenAddress(user)}
+                </h1>
+              </div>
+            ))}
+          </div>
         </div>
+
         <h2 className="font-poppins dark:text-white text-nft-black-1 text-2xl font-semibold mt-2 ml-4 sm:ml-2">
           Artworks from the people you follow!
         </h2>
-        <div className="mt-3 w-full flex flex-wrap justify-start md:justify-center">
+        <div className="mt-9 w-full grid grid-cols-2 md:grid-cols-1 gap-7">
           {/* map through the nfts and render a card for each one */}
           {nfts.map((nft) => <NFTCard key={nft.tokenId} nft={nft} />)}
         </div>

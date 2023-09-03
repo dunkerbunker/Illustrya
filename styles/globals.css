@@ -37,6 +37,11 @@
 .label {
     transform: scale(1.5);
 }
+
+.scrollable-container {
+    overflow-x:scroll;
+    display: inline-block;
+  }
   
 .ball {
     top: 2px;
