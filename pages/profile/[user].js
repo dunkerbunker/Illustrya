@@ -31,7 +31,7 @@ const Profile = () => {
   const [nickname, setNickname] = useState('');
   const [description, setDescription] = useState('');
   const [followersCount, setFollowersCount] = useState(0);
-  const [isFollowing, setIsFollowing] = useState(true);
+  const [isFollowing, setIsFollowing] = useState(false);
 
   const handleListedButtonClick = () => {
     setListedActive(!isListedActive); // Toggle the Listed button state

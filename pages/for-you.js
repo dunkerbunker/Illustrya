@@ -5,12 +5,15 @@ import Image from 'next/image';
 import { NFTContext } from '../context/NFTContext';
 import { NFTCard, Loader } from '../components';
 import images from '../assets';
+import { shortenAddress } from '../utils/shortenAddress';
 // import { fetchNFTsByRecommendation } from '../utils/getRecommendedPosts';
 
 const ForYou = () => {
   const { fetchNFTs, currentAccount } = useContext(NFTContext);
   const [nfts, setNfts] = useState([]);
-  const [followingUsers, setFollowingUsers] = useState([]); // [0x123, 0x456, 0x789]
+  const [followingUsers, setFollowingUsers] = useState([]);
+  const [followingUsersNames, setFollowingUsersNames] = useState([]); // ['user1', 'user2'
+  const [followingUsersImages, setFollowingUsersImages] = useState([]); // ['user1', 'user2'
   const [isLoading, setIsLoading] = useState(true);
 
   const initiateWalletIfConnected = async () => {
@@ -44,6 +47,57 @@ const ForYou = () => {
         }
 
         const { following } = response.data;
+
+        console.log('following', following);
+
+        // Create an array of promises for fetching user data
+        const userPromises = following.map(async (user) => {
+          const userResponse = await axios.get(`http://localhost:3000/users/${user}`);
+
+          return userResponse.data;
+        });
+
+        // Use Promise.all to fetch user data for all following users in parallel
+        const userDataArray = await Promise.all(userPromises);
+
+        // Process the responses and populate names and profileImages arrays
+        const names = [];
+        const profileImages = [];
+
+        userDataArray.forEach((userData) => {
+          console.log('userData', userData);
+          if (userData) {
+            if (userData.nickname) {
+              const { nickname } = userData;
+
+              const userName = nickname || null;
+
+              names.push(userName);
+            }
+
+            if (userData.profileImage) {
+              const { profileImage, profileImageType } = userData;
+
+              const userImage = profileImage ? `data:${profileImageType};base64,${profileImage}` : null;
+
+              console.log('userImage', userImage);
+
+              // (`data:${profileImageType};base64,${userData.profileImage}`);
+              profileImages.push(userImage);
+            }
+          } else {
+            // If user data is not found, add null values
+            names.push(null);
+            profileImages.push(null);
+          }
+        });
+
+        console.log('names', names);
+        console.log('profileImages', profileImages);
+
+        // Set the state with the collected data
+        setFollowingUsersNames(names);
+        setFollowingUsersImages(profileImages);
 
         setFollowingUsers(following);
 
@@ -113,11 +167,22 @@ const ForYou = () => {
               key={index} // Make sure to use a unique key for each item in the list
               className="mr-4 flexCenter w-40 h-40 sm:w-36 sm:h-36 p-1 bg-nft-black-2 rounded-full relative"
             >
-              <Image
-                src={images.creator1} // Assuming user.profileImage contains the image URL
-                className="rounded-full object-cover"
-                objectFit="cover"
-              />
+              {followingUsersImages[index] ? (
+                <img
+                  src={followingUsersImages[index]}
+                  className="rounded-full object-cover"
+                />
+              ) : (
+                <Image
+                  src={images.creator1}
+                  className="rounded-full object-cover"
+                  objectFit="cover"
+                />
+              )}
+
+              <h1 className="absolute top-36 pt-1 pb-1 left-0 right-0 text-center font-poppins text-white font-semibold text-sm bg-nft-black-2 rounded-lg">
+                {followingUsersNames[index] || shortenAddress(user)}
+              </h1>
             </div>
           ))}
         </div>
