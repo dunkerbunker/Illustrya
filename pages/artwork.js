@@ -122,6 +122,10 @@ const NFTDetails = () => {
     initiateWalletIfConnected();
   }, [currentAccount]);
 
+  useEffect(() => {
+    console.log(nft);
+  }, [nft]);
+
   const getLikes = async (tokenID) => {
     try {
       const token = tokenID;

@@ -10,7 +10,7 @@ app.use(express.json());
 app.use(fileUpload());
 
 // Connect to MongoDB
-const MONGO_URI = 'mongodb://localhost:27017/nftdb';
+const MONGO_URI = 'mongodb://0.0.0.0:27017/nftdb';
 mongoose.connect(MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true });
 const db = mongoose.connection;
 
